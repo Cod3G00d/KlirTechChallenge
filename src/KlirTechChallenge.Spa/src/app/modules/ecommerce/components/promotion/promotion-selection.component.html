@@ -1,0 +1,31 @@
+<div class="promotion-selection-container">
+  <div class="mb-4">
+    <h3>Promotions</h3>
+  </div>
+  <div class="promotion-list-container">
+    <div class="form-content promotion-list">
+      <div *ngIf="promotions && promotions.length == 0" class="alert alert-danger no-orders-message">
+        You don't have promotons.
+      </div>
+
+      <div *ngIf="promotions && promotions.length > 0" class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+              <tr>
+                <th scope="col" class="table-header">Name</th>
+                <th scope="col" class="table-header">Is Active</th>
+              </tr>
+            </thead>
+          <tbody>
+            <tr *ngFor="let promotion of promotions | orderBy:'name';; index as i">
+              <td class="table-row-text name-column">{{ promotion.name }}</td>
+              <td class="table-row-text active-column">
+              <input type="checkbox" [checked]="promotion.active" (change)="changePromotion(promotion,$event)" /> 
+            </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

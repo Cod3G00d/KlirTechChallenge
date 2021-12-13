@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="9.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\KlirTechChallenge.Application\KlirTechChallenge.Application.csproj" />
+    <ProjectReference Include="..\KlirTechChallenge.Infrastructure\KlirTechChallenge.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>

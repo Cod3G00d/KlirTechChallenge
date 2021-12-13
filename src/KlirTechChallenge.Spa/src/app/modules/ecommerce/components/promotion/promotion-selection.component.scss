@@ -1,0 +1,29 @@
+.promotion-selection-container{
+  margin-top: 20px;
+  width: 75%;
+  margin-bottom: 20px;
+  float: center;
+
+  .promotion-list-container{
+    width: 55%;
+    float: left;
+
+    .promotion-list {
+      border-radius: 5px;
+      width: 100%;
+      text-align: left;
+
+      .table-row-text {
+        line-height: 40px;
+      }
+      .name-column {
+        width:100px;
+      }
+      .active-column {
+        width:100px;
+      }
+
+    }
+  }
+
+}
