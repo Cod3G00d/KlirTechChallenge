@@ -1,8 +1,13 @@
 ﻿using KlirTechChallenge.Application.Core.CQRS.CommandHandling;
+using System;
+using System.Collections.Generic;
+using FluentValidation;
+using FluentValidation.Results;
+
 
 namespace KlirTechChallenge.Application.Customers.UpdateCustomer
 {
-    public record class UpdateCustomerCommand : Command<Guid>
+    public  class UpdateCustomerCommand : Command<Guid>
     {
         public Guid CustomerId { get; init; }
         public string Name { get; init; }

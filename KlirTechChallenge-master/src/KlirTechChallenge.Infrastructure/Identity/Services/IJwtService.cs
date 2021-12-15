@@ -1,8 +1,9 @@
 ﻿using System.Threading.Tasks;
 
-namespace KlirTechChallenge.Infrastructure.Identity.Services;
-
-public interface IJwtService
+namespace KlirTechChallenge.Infrastructure.Identity.Services
 {
-    Task<string> GenerateJwt(string email);
+    public interface IJwtService
+    {
+        Task<string> GenerateJwt(string email);
+    }
 }

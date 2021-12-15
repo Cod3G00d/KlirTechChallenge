@@ -1,27 +1,30 @@
 ﻿using System.Collections.Generic;
+using FluentValidation;
+using FluentValidation.Results;
 using KlirTechChallenge.Application.Core.CQRS.QueryHandling;
 
-namespace KlirTechChallenge.Application.Products.ListProducts;
-
-public record class ListProductsQuery : Query<IList<ProductViewModel>>
+namespace KlirTechChallenge.Application.Products.ListProducts
 {
-    public string Currency { get; init;  }
-
-    public ListProductsQuery(string currency)
+    public  class ListProductsQuery : Query<IList<ProductViewModel>>
     {
-        Currency = currency;
+        public string Currency { get; init; }
+
+        public ListProductsQuery(string currency)
+        {
+            Currency = currency;
+        }
+
+        public override ValidationResult Validate()
+        {
+            return new ListProductsQueryValidator().Validate(this);
+        }
     }
 
-    public override ValidationResult Validate()
+    public class ListProductsQueryValidator : AbstractValidator<ListProductsQuery>
     {
-        return new ListProductsQueryValidator().Validate(this);
-    }
-}
-
-public class ListProductsQueryValidator : AbstractValidator<ListProductsQuery>
-{
-    public ListProductsQueryValidator()
-    {
-        RuleFor(x => x.Currency).NotEmpty().WithMessage("Currency is empty.");
+        public ListProductsQueryValidator()
+        {
+            RuleFor(x => x.Currency).NotEmpty().WithMessage("Currency is empty.");
+        }
     }
 }

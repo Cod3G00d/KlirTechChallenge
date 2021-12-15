@@ -1,19 +1,22 @@
-﻿using System.Linq.Expressions;
+﻿using System;
+using System.Linq.Expressions;
 using KlirTechChallenge.Domain.Customers;
 using KlirTechChallenge.Domain.SeedWork;
 
-namespace KlirTechChallenge.Domain.Orders.Specifications;   
-public class IsOrderPlacedByCustomer : Specification<Order>
+namespace KlirTechChallenge.Domain.Orders.Specifications
 {
-    private readonly CustomerId _customerId;
-
-    public IsOrderPlacedByCustomer(CustomerId customerId)
+    public class IsOrderPlacedByCustomer : Specification<Order>
     {
-        _customerId = customerId;
-    }
+        private readonly CustomerId _customerId;
 
-    public override Expression<Func<Order, bool>> ToExpression()
-    {
-        return order => order.CustomerId == _customerId;
+        public IsOrderPlacedByCustomer(CustomerId customerId)
+        {
+            _customerId = customerId;
+        }
+
+        public override Expression<Func<Order, bool>> ToExpression()
+        {
+            return order => order.CustomerId == _customerId;
+        }
     }
 }

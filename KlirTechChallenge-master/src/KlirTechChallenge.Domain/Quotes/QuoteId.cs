@@ -1,18 +1,20 @@
 ﻿using KlirTechChallenge.Domain.SeedWork;
+using System;
 
-namespace KlirTechChallenge.Domain.Quotes;
-
-public class QuoteId : StronglyTypedId<QuoteId>
+namespace KlirTechChallenge.Domain.Quotes
 {
-    public QuoteId(Guid value) : base(value)
+    public class QuoteId : StronglyTypedId<QuoteId>
     {
-    }
+        public QuoteId(Guid value) : base(value)
+        {
+        }
 
-    public static QuoteId Of(Guid quoteId)
-    {
-        if (quoteId == Guid.Empty)
-            throw new BusinessRuleException("Quote Id must be provided.");
+        public static QuoteId Of(Guid quoteId)
+        {
+            if (quoteId == Guid.Empty)
+                throw new BusinessRuleException("Quote Id must be provided.");
 
-        return new QuoteId(quoteId);
+            return new QuoteId(quoteId);
+        }
     }
 }

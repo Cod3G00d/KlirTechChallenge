@@ -1,41 +1,43 @@
 ﻿using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Collections.Generic;
 
-namespace KlirTechChallenge.WebApi.Configurations;
-
-public static class SwaggerSetup
+namespace KlirTechChallenge.WebApi.Configurations
 {
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="services"></param>
-    public static void AddSwaggerSetup(this IServiceCollection services)
+    public static class SwaggerSetup
     {
-        if (services == null) 
-            throw new ArgumentNullException(nameof(services));
-
-        services.AddSwaggerGen(s =>
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="services"></param>
+        public static void AddSwaggerSetup(this IServiceCollection services)
         {
-            s.SwaggerDoc("v1", new OpenApiInfo
-            {
-                Version = "v1",
-                Title = "KlirTechChallenge - API",
-                Description = "KlirTechChallenge API Swagger",
-                Contact = new OpenApiContact { Name = "Felipe Souza", Email = "felipeagle@gmail.com" },
-            });
+            if (services == null)
+                throw new ArgumentNullException(nameof(services));
 
-            s.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            services.AddSwaggerGen(s =>
             {
-                Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
-                Name = "Authorization",
-                In = ParameterLocation.Header,
-                Type = SecuritySchemeType.ApiKey,
-                Scheme = "Bearer"
-            });
+                s.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Version = "v1",
+                    Title = "KlirTechChallenge - API",
+                    Description = "KlirTechChallenge API Swagger",
+                    Contact = new OpenApiContact { Name = "Felipe Souza", Email = "felipeagle@gmail.com" },
+                });
 
-            s.AddSecurityRequirement(new OpenApiSecurityRequirement
-            {
+                s.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer"
+                });
+
+                s.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
                 {
                     new OpenApiSecurityScheme
                     {
@@ -51,19 +53,20 @@ public static class SwaggerSetup
                     },
                     new List<string>()
                 }
+                });
+
             });
+        }
 
-        });
-    }
-
-    public static void UseSwaggerSetup(this IApplicationBuilder app)
-    {
-        if (app == null) throw new ArgumentNullException(nameof(app));
-
-        app.UseSwagger();
-        app.UseSwaggerUI(c =>
+        public static void UseSwaggerSetup(this IApplicationBuilder app)
         {
-            c.SwaggerEndpoint("/swagger/v1/swagger.json", "KlirTechChallenge - API");
-        });
+            if (app == null) throw new ArgumentNullException(nameof(app));
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "KlirTechChallenge - API");
+            });
+        }
     }
 }

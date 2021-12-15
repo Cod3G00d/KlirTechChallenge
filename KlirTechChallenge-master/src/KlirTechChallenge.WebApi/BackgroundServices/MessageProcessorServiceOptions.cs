@@ -1,7 +1,8 @@
-﻿namespace KlirTechChallenge.WebApi.BackgroundServices;
-
-public class MessageProcessorServiceOptions
+﻿namespace KlirTechChallenge.WebApi.BackgroundServices
 {
-    public double IntervalOnSeconds { get; set; }
-    public int BatchSize { get; set; }
+    public class MessageProcessorServiceOptions
+    {
+        public double IntervalOnSeconds { get; set; }
+        public int BatchSize { get; set; }
+    }
 }

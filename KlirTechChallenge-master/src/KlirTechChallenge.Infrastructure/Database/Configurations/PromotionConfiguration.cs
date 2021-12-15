@@ -6,27 +6,29 @@ using KlirTechChallenge.Domain.Quotes;
 using KlirTechChallenge.Domain.SharedKernel;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Microsoft.EntityFrameworkCore;
 
-namespace KlirTechChallenge.Infrastructure.Database.Configurations;
-
-internal sealed class PromotionConfiguration : IEntityTypeConfiguration<Promotion>
+namespace KlirTechChallenge.Infrastructure.Database.Configurations
 {
-    public void Configure(EntityTypeBuilder<Promotion> builder)
+    internal sealed class PromotionConfiguration : IEntityTypeConfiguration<Promotion>
     {
-        builder.ToTable("Promotions", "dbo");
+        public void Configure(EntityTypeBuilder<Promotion> builder)
+        {
+            builder.ToTable("Promotions", "dbo");
 
-        builder.HasKey(x => x.Id);
-        builder.Property(x => x.Id)
-        .HasConversion(
-            v => v.Value,
-            v => new PromotionId(v));
+            builder.HasKey(x => x.Id);
+            builder.Property(x => x.Id)
+            .HasConversion(
+                v => v.Value,
+                v => new PromotionId(v));
 
-        builder.Property(e => e.CreationDate);
-        builder.Property(e => e.Name)
-        .HasMaxLength(25).IsRequired();
+            builder.Property(e => e.CreationDate);
+            builder.Property(e => e.Name)
+            .HasMaxLength(25).IsRequired();
 
-        builder.Property(e => e.CreationDate);
-        builder.Property(e => e.Active)
-        .IsRequired();
+            builder.Property(e => e.CreationDate);
+            builder.Property(e => e.Active)
+            .IsRequired();
+        }
     }
 }

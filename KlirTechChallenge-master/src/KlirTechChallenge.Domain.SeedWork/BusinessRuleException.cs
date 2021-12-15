@@ -1,8 +1,9 @@
 ﻿using System;
 
-namespace KlirTechChallenge.Domain.SeedWork;
-
-public class BusinessRuleException : Exception
+namespace KlirTechChallenge.Domain.SeedWork
 {
-    public BusinessRuleException(string message) : base(message) { }
+    public class BusinessRuleException : Exception
+    {
+        public BusinessRuleException(string message) : base(message) { }
+    }
 }

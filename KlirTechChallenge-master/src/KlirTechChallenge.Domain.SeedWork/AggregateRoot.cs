@@ -1,26 +1,27 @@
 ﻿using System.Collections.Generic;
 using KlirTechChallenge.Domain.Core.Events;
 
-namespace KlirTechChallenge.Domain.SeedWork;
-
-/// <summary>
-/// Aggregate root base class
-/// </summary>
-/// <typeparam name="TKey"></typeparam>
-public abstract class AggregateRoot<TKey> : Entity<TKey>, IAggregateRoot
+namespace KlirTechChallenge.Domain.SeedWork
 {
-    public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents?.AsReadOnly();
-
-    protected void AddDomainEvent(IDomainEvent domainEvent)
+    /// <summary>
+    /// Aggregate root base class
+    /// </summary>
+    /// <typeparam name="TKey"></typeparam>
+    public abstract class AggregateRoot<TKey> : Entity<TKey>, IAggregateRoot
     {
-        _domainEvents = _domainEvents ?? new List<IDomainEvent>();
-        _domainEvents.Add(domainEvent);
-    }
+        public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents?.AsReadOnly();
 
-    public void ClearDomainEvents()
-    {
-        _domainEvents.Clear();
-    }
+        protected void AddDomainEvent(IDomainEvent domainEvent)
+        {
+            _domainEvents = _domainEvents ?? new List<IDomainEvent>();
+            _domainEvents.Add(domainEvent);
+        }
 
-    private List<IDomainEvent> _domainEvents;
+        public void ClearDomainEvents()
+        {
+            _domainEvents.Clear();
+        }
+
+        private List<IDomainEvent> _domainEvents;
+    }
 }

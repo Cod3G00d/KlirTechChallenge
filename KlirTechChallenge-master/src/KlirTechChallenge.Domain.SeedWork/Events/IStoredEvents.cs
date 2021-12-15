@@ -1,13 +1,15 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System;
 
-namespace KlirTechChallenge.Domain.Core.Events;
-
-public interface IStoredEvents
+namespace KlirTechChallenge.Domain.Core.Events
 {
-    void UpdateProcessedAt(StoredEvent message);
-    Task StoreRange(List<StoredEvent> messages);
-    Task<IList<StoredEvent>> GetByAggregateId(Guid aggregateId, CancellationToken cancellationToken);
-    Task<IReadOnlyCollection<StoredEvent>> FetchUnprocessed(int batchSize, CancellationToken cancellationToken);
+    public interface IStoredEvents
+    {
+        void UpdateProcessedAt(StoredEvent message);
+        Task StoreRange(List<StoredEvent> messages);
+        Task<IList<StoredEvent>> GetByAggregateId(Guid aggregateId, CancellationToken cancellationToken);
+        Task<IReadOnlyCollection<StoredEvent>> FetchUnprocessed(int batchSize, CancellationToken cancellationToken);
+    }
 }

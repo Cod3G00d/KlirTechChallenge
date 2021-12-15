@@ -1,22 +1,23 @@
 ﻿using KlirTechChallenge.Domain;
 using KlirTechChallenge.Domain.Customers;
 
-namespace KlirTechChallenge.Application.Customers.DomainServices;
-
-public class CustomerUniquenessChecker : ICustomerUniquenessChecker
+namespace KlirTechChallenge.Application.Customers.DomainServices
 {
-    private readonly IEcommerceUnitOfWork _unitOfWork;
-
-    public CustomerUniquenessChecker(IEcommerceUnitOfWork unitOfWork)
+    public class CustomerUniquenessChecker : ICustomerUniquenessChecker
     {
-        _unitOfWork = unitOfWork;
-    }
+        private readonly IEcommerceUnitOfWork _unitOfWork;
 
-    public bool IsUserUnique(string customerEmail)
-    {
-        var customer = _unitOfWork.Customers
-            .GetByEmail(customerEmail).Result;
+        public CustomerUniquenessChecker(IEcommerceUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+        }
 
-        return customer == null;
+        public bool IsUserUnique(string customerEmail)
+        {
+            var customer = _unitOfWork.Customers
+                .GetByEmail(customerEmail).Result;
+
+            return customer == null;
+        }
     }
 }

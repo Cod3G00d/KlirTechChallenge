@@ -1,8 +1,11 @@
-﻿namespace KlirTechChallenge.Application.Quotes.ChangeQuote;
+﻿using System;
 
-public record ChangeQuoteRequest
+namespace KlirTechChallenge.Application.Quotes.ChangeQuote
 {
-    public Guid QuoteId { get; init; }
-    public ProductDto Product { get; init; }
-    public string Currency { get; init; }
+    public class ChangeQuoteRequest
+    {
+        public Guid QuoteId { get; init; }
+        public ProductDto Product { get; init; }
+        public string Currency { get; init; }
+    }
 }

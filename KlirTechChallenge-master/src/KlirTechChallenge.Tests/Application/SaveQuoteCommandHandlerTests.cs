@@ -13,72 +13,73 @@ using KlirTechChallenge.Domain.SharedKernel;
 using KlirTechChallenge.Application.Quotes.SaveQuote;
 using KlirTechChallenge.Application.Quotes.ChangeQuote;
 
-namespace KlirTechChallenge.Tests.Commands;
-
-public class SaveQuoteCommandHandlerTests
+namespace KlirTechChallenge.Tests.Commands
 {
-    private readonly IEcommerceUnitOfWork _unitOfWork;
-    private readonly ICustomers _customers;
-    private readonly IProducts _products;
-    private readonly IQuotes _quotes;
-
-    public SaveQuoteCommandHandlerTests()
+    public class SaveQuoteCommandHandlerTests
     {
-        _customers = NSubstitute.Substitute.For<ICustomers>();
-        _products = NSubstitute.Substitute.For<IProducts>();
-        _quotes = NSubstitute.Substitute.For<IQuotes>();
-        _unitOfWork = NSubstitute.Substitute.For<IEcommerceUnitOfWork>();
+        private readonly IEcommerceUnitOfWork _unitOfWork;
+        private readonly ICustomers _customers;
+        private readonly IProducts _products;
+        private readonly IQuotes _quotes;
 
-        _unitOfWork.Customers.ReturnsForAnyArgs(_customers);
-        _unitOfWork.Products.ReturnsForAnyArgs(_products);
-        _unitOfWork.Quotes.ReturnsForAnyArgs(_quotes);
-    }
+        public SaveQuoteCommandHandlerTests()
+        {
+            _customers = NSubstitute.Substitute.For<ICustomers>();
+            _products = NSubstitute.Substitute.For<IProducts>();
+            _quotes = NSubstitute.Substitute.For<IQuotes>();
+            _unitOfWork = NSubstitute.Substitute.For<IEcommerceUnitOfWork>();
 
-    [Fact]
-    public async Task Quote_has_been_created_for_costumer()
-    {
-        var currency = Currency.USDollar;
-        var productPrice = 12.5;
-        var productQuantity = 10;
-        var customerEmail = "test@domain.com";
+            _unitOfWork.Customers.ReturnsForAnyArgs(_customers);
+            _unitOfWork.Products.ReturnsForAnyArgs(_products);
+            _unitOfWork.Quotes.ReturnsForAnyArgs(_quotes);
+        }
 
-        var customerUniquenessChecker = Substitute.For<ICustomerUniquenessChecker>();
-        customerUniquenessChecker.IsUserUnique(customerEmail).Returns(true);
+        [Fact]
+        public async Task Quote_has_been_created_for_costumer()
+        {
+            var currency = Currency.USDollar;
+            var productPrice = 12.5;
+            var productQuantity = 10;
+            var customerEmail = "test@domain.com";
 
-        var productMoney = Money.Of(Convert.ToDecimal(productPrice), currency.Code);
-        var customer = Customer
-            .CreateNew(customerEmail, "Customer X", customerUniquenessChecker);
+            var customerUniquenessChecker = Substitute.For<ICustomerUniquenessChecker>();
+            customerUniquenessChecker.IsUserUnique(customerEmail).Returns(true);
 
-        _customers
-            .GetById(Arg.Any<CustomerId>()).Returns(customer);
+            var productMoney = Money.Of(Convert.ToDecimal(productPrice), currency.Code);
+            var customer = Customer
+                .CreateNew(customerEmail, "Customer X", customerUniquenessChecker);
 
-        var product = Product.CreateNew("Product X", productMoney,null);
-        _products.GetById(Arg.Any<ProductId>()).Returns(product);
+            _customers
+                .GetById(Arg.Any<CustomerId>()).Returns(customer);
 
-        var handler = new CreateQuoteCommandHandler(_unitOfWork,null);
-        var command = new CreateQuoteCommand(customer.Id.Value, new ProductDto(product.Id.Value, productQuantity));
-        var result = await handler.Handle(command, CancellationToken.None);
+            var product = Product.CreateNew("Product X", productMoney, null);
+            _products.GetById(Arg.Any<ProductId>()).Returns(product);
 
-        await _quotes.Received(1)
-            .Add(Arg.Is((Quote c) => c.Id.Value == result.Id), Arg.Any<CancellationToken>());
+            var handler = new CreateQuoteCommandHandler(_unitOfWork, null);
+            var command = new CreateQuoteCommand(customer.Id.Value, new ProductDto(product.Id.Value, productQuantity));
+            var result = await handler.Handle(command, CancellationToken.None);
 
-        await _customers.Received(1)
-            .GetById(customer.Id, Arg.Any<CancellationToken>());
+            await _quotes.Received(1)
+                .Add(Arg.Is((Quote c) => c.Id.Value == result.Id), Arg.Any<CancellationToken>());
 
-        await _unitOfWork.Received(1)
-            .CommitAsync(Arg.Any<CancellationToken>());
+            await _customers.Received(1)
+                .GetById(customer.Id, Arg.Any<CancellationToken>());
 
-        result.Should().NotBe(Guid.Empty);
-    }
+            await _unitOfWork.Received(1)
+                .CommitAsync(Arg.Any<CancellationToken>());
 
-    [Fact]
-    public async Task SaveQuoteCommand_validation_should_fail_with_empty_required_fields()
-    {
-        var handler = new ChangeQuoteCommandHandler(_unitOfWork,null);
-        var command = new ChangeQuoteCommand(Guid.Empty, null);
-        var result = await handler.Handle(command, CancellationToken.None);
+            result.Should().NotBe(Guid.Empty);
+        }
 
-        result.ValidationResult.IsValid.Should().BeFalse();
-        result.ValidationResult.Errors.Count.Should().Be(2);
+        [Fact]
+        public async Task SaveQuoteCommand_validation_should_fail_with_empty_required_fields()
+        {
+            var handler = new ChangeQuoteCommandHandler(_unitOfWork, null);
+            var command = new ChangeQuoteCommand(Guid.Empty, null);
+            var result = await handler.Handle(command, CancellationToken.None);
+
+            result.ValidationResult.IsValid.Should().BeFalse();
+            result.ValidationResult.Errors.Count.Should().Be(2);
+        }
     }
 }

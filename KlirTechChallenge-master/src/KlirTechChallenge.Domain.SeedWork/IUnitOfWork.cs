@@ -1,9 +1,10 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 
-namespace KlirTechChallenge.Domain.SeedWork;
-
-public interface IUnitOfWork
+namespace KlirTechChallenge.Domain.SeedWork
 {
-    Task<bool> CommitAsync(CancellationToken cancellationToken = default(CancellationToken));
+    public interface IUnitOfWork
+    {
+        Task<bool> CommitAsync(CancellationToken cancellationToken = default(CancellationToken));
+    }
 }

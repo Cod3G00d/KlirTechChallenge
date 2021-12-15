@@ -1,19 +1,21 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using KlirTechChallenge.Domain.Customers.Events;
+using MediatR;
 
-namespace KlirTechChallenge.Application.Customers.RegisterCustomer;
-
-public class CustomerRegisteredEventHandler : INotificationHandler<CustomerRegisteredEvent>
+namespace KlirTechChallenge.Application.Customers.RegisterCustomer
 {
-    public CustomerRegisteredEventHandler()
+    public class CustomerRegisteredEventHandler : INotificationHandler<CustomerRegisteredEvent>
     {
-    }
+        public CustomerRegisteredEventHandler()
+        {
+        }
 
-    public async Task Handle(CustomerRegisteredEvent customerRegisteredEvent, 
-        CancellationToken cancellationToken)
-    {
-        // Here we could send an email to customer informing the user was registred with success
-        await Task.CompletedTask;
+        public async Task Handle(CustomerRegisteredEvent customerRegisteredEvent,
+            CancellationToken cancellationToken)
+        {
+            // Here we could send an email to customer informing the user was registred with success
+            await Task.CompletedTask;
+        }
     }
 }

@@ -2,33 +2,39 @@
 using System.Collections.Generic;
 using KlirTechChallenge.Domain.Payments;
 using KlirTechChallenge.Infrastructure.Database.Context;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+using KlirTechChallenge.Domain.SeedWork;
+using Microsoft.EntityFrameworkCore;
 
-namespace KlirTechChallenge.Infrastructure.Domain.Payments;
-
-public class Payments : IPayments
+namespace KlirTechChallenge.Infrastructure.Domain.Payments
 {
-    private readonly KlirTechChallengeContext _context;
-
-    public Payments(KlirTechChallengeContext context)
+    public class Payments : IPayments
     {
-        _context = context ?? throw new ArgumentNullException(nameof(context));
-    }
+        private readonly KlirTechChallengeContext _context;
 
-    public async Task Add(Payment payment, CancellationToken cancellationToken = default)
-    {
-        await _context.Payments.AddAsync(payment, cancellationToken);
-    }
+        public Payments(KlirTechChallengeContext context)
+        {
+            _context = context ?? throw new ArgumentNullException(nameof(context));
+        }
 
-    public async Task<IReadOnlyList<Payment>> Find(Specification<Payment> specification, CancellationToken cancellationToken = default)
-    {
-        return await _context.Payments
-            .Where(specification.ToExpression())
-            .ToListAsync();
-    }
+        public async Task Add(Payment payment, CancellationToken cancellationToken = default)
+        {
+            await _context.Payments.AddAsync(payment, cancellationToken);
+        }
 
-    public async Task<Payment> GetById(PaymentId paymentId, CancellationToken cancellationToken = default)
-    {
-        return await _context.Payments
-            .FirstOrDefaultAsync(x => x.Id == paymentId, cancellationToken);
+        public async Task<IReadOnlyList<Payment>> Find(Specification<Payment> specification, CancellationToken cancellationToken = default)
+        {
+            return await _context.Payments
+                .Where(specification.ToExpression())
+                .ToListAsync();
+        }
+
+        public async Task<Payment> GetById(PaymentId paymentId, CancellationToken cancellationToken = default)
+        {
+            return await _context.Payments
+                .FirstOrDefaultAsync(x => x.Id == paymentId, cancellationToken);
+        }
     }
 }

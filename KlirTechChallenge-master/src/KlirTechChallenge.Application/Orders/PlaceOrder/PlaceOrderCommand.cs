@@ -1,9 +1,12 @@
 ﻿using KlirTechChallenge.Domain.SharedKernel;
 using KlirTechChallenge.Application.Core.CQRS.CommandHandling;
+using System;
+using FluentValidation.Results;
+using FluentValidation;
 
 namespace KlirTechChallenge.Application.Orders.PlaceOrder
 {
-    public record class PlaceOrderCommand : Command<Guid>
+    public  class PlaceOrderCommand : Command<Guid>
     {
         public Guid QuoteId { get; init; }
         public Guid CustomerId { get; init; }

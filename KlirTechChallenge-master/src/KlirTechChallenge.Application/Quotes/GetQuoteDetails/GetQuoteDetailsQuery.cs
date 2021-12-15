@@ -1,29 +1,33 @@
-﻿using KlirTechChallenge.Application.Core.CQRS.QueryHandling;
+﻿using FluentValidation;
+using FluentValidation.Results;
+using KlirTechChallenge.Application.Core.CQRS.QueryHandling;
+using System;
 
-namespace KlirTechChallenge.Application.Quotes.GetQuoteDetails;
-
-public record class GetQuoteDetailsQuery : Query<QuoteDetailsViewModel>
+namespace KlirTechChallenge.Application.Quotes.GetQuoteDetails
 {
-    public Guid QuoteId { get; init; }
-    public string Currency { get; init; }
-
-    public GetQuoteDetailsQuery(Guid quoteId, string currency)
+    public  class GetQuoteDetailsQuery : Query<QuoteDetailsViewModel>
     {
-        QuoteId = quoteId;
-        Currency = currency;
+        public Guid QuoteId { get; init; }
+        public string Currency { get; init; }
+
+        public GetQuoteDetailsQuery(Guid quoteId, string currency)
+        {
+            QuoteId = quoteId;
+            Currency = currency;
+        }
+
+        public override ValidationResult Validate()
+        {
+            return new GetQuotetDetailsQueryValidator().Validate(this);
+        }
     }
 
-    public override ValidationResult Validate()
+    public class GetQuotetDetailsQueryValidator : AbstractValidator<GetQuoteDetailsQuery>
     {
-        return new GetQuotetDetailsQueryValidator().Validate(this);
-    }
-}
-
-public class GetQuotetDetailsQueryValidator : AbstractValidator<GetQuoteDetailsQuery>
-{
-    public GetQuotetDetailsQueryValidator()
-    {
-        RuleFor(x => x.QuoteId).NotEqual(Guid.Empty).WithMessage("QuoteId is empty.");
-        RuleFor(x => x.Currency).NotEmpty().WithMessage("Currency is empty.");
+        public GetQuotetDetailsQueryValidator()
+        {
+            RuleFor(x => x.QuoteId).NotEqual(Guid.Empty).WithMessage("QuoteId is empty.");
+            RuleFor(x => x.Currency).NotEmpty().WithMessage("Currency is empty.");
+        }
     }
 }

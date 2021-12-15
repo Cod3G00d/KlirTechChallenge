@@ -6,48 +6,49 @@ using KlirTechChallenge.Domain.Orders;
 using KlirTechChallenge.Domain.Payments.Events;
 using KlirTechChallenge.Application.Core.ExceptionHandling;
 
-namespace KlirTechChallenge.Application.Orders.PlaceOrder;
-
-public class PaymentAuthorizedEventHandler : INotificationHandler<PaymentAuthorizedEvent>
+namespace KlirTechChallenge.Application.Orders.PlaceOrder
 {
-    private readonly IEcommerceUnitOfWork _unitOfWork;
-    private readonly IOrderStatusWorkflow _orderStatusWorkflow;
-    private readonly IOrderStatusBroadcaster _orderStatusBroadcaster;
-
-    public PaymentAuthorizedEventHandler(
-        IEcommerceUnitOfWork unitOfWork,
-        IOrderStatusWorkflow orderStatusWorkflow,
-        IOrderStatusBroadcaster orderStatusBroadcaster)
+    public class PaymentAuthorizedEventHandler : INotificationHandler<PaymentAuthorizedEvent>
     {
-        _unitOfWork = unitOfWork;
-        _orderStatusWorkflow = orderStatusWorkflow;
-        _orderStatusBroadcaster = orderStatusBroadcaster;
-    }
+        private readonly IEcommerceUnitOfWork _unitOfWork;
+        private readonly IOrderStatusWorkflow _orderStatusWorkflow;
+        private readonly IOrderStatusBroadcaster _orderStatusBroadcaster;
 
-    public async Task Handle(PaymentAuthorizedEvent paymentAuthorizedEvent, 
-        CancellationToken cancellationToken)
-    {
-        var payment = await _unitOfWork.Payments
-            .GetById(paymentAuthorizedEvent.PaymentId, cancellationToken);
+        public PaymentAuthorizedEventHandler(
+            IEcommerceUnitOfWork unitOfWork,
+            IOrderStatusWorkflow orderStatusWorkflow,
+            IOrderStatusBroadcaster orderStatusBroadcaster)
+        {
+            _unitOfWork = unitOfWork;
+            _orderStatusWorkflow = orderStatusWorkflow;
+            _orderStatusBroadcaster = orderStatusBroadcaster;
+        }
 
-        var order = await _unitOfWork.Orders
-            .GetById(payment.OrderId, cancellationToken);
+        public async Task Handle(PaymentAuthorizedEvent paymentAuthorizedEvent,
+            CancellationToken cancellationToken)
+        {
+            var payment = await _unitOfWork.Payments
+                .GetById(paymentAuthorizedEvent.PaymentId, cancellationToken);
 
-        if (payment == null)
-            throw new ApplicationDataException("Payment not found.");
+            var order = await _unitOfWork.Orders
+                .GetById(payment.OrderId, cancellationToken);
 
-        if (order == null)
-            throw new ApplicationDataException("Order not found.");
+            if (payment == null)
+                throw new ApplicationDataException("Payment not found.");
 
-        // Changing order status
-        _orderStatusWorkflow.CalculateOrderStatus(order, payment);
-        await _unitOfWork.CommitAsync(cancellationToken);
+            if (order == null)
+                throw new ApplicationDataException("Order not found.");
 
-        // Broadcasting order update
-        await _orderStatusBroadcaster.BroadcastOrderStatus(
-            order.CustomerId, 
-            order.Id, 
-            order.Status
-        );
+            // Changing order status
+            _orderStatusWorkflow.CalculateOrderStatus(order, payment);
+            await _unitOfWork.CommitAsync(cancellationToken);
+
+            // Broadcasting order update
+            await _orderStatusBroadcaster.BroadcastOrderStatus(
+                order.CustomerId,
+                order.Id,
+                order.Status
+            );
+        }
     }
 }

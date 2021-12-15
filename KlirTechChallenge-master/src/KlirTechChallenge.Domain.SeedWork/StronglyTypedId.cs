@@ -1,24 +1,27 @@
-﻿namespace KlirTechChallenge.Domain.SeedWork;
+﻿using System;
 
-public abstract class StronglyTypedId<T> : ValueObject<StronglyTypedId<T>>
+namespace KlirTechChallenge.Domain.SeedWork
 {
-    public Guid Value { get; }
-
-    protected StronglyTypedId(Guid value)
+    public abstract class StronglyTypedId<T> : ValueObject<StronglyTypedId<T>>
     {
-        Value = value;
-    }
+        public Guid Value { get; }
 
-    protected override bool EqualsCore(StronglyTypedId<T> other)
-    {
-        return this.Value == other.Value;
-    }
-
-    protected override int GetHashCodeCore()
-    {
-        unchecked
+        protected StronglyTypedId(Guid value)
         {
-            return Value.GetHashCode();
+            Value = value;
+        }
+
+        protected override bool EqualsCore(StronglyTypedId<T> other)
+        {
+            return this.Value == other.Value;
+        }
+
+        protected override int GetHashCodeCore()
+        {
+            unchecked
+            {
+                return Value.GetHashCode();
+            }
         }
     }
 }

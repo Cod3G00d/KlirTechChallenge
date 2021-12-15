@@ -1,15 +1,17 @@
 ﻿using KlirTechChallenge.Application.Core.AutoMapper;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 
-namespace KlirTechChallenge.WebApi.Configurations;
-
-public static class AutoMapperSetup
+namespace KlirTechChallenge.WebApi.Configurations
 {
-    public static void AddAutoMapperSetup(this IServiceCollection services)
+    public static class AutoMapperSetup
     {
-        if (services == null) 
-            throw new ArgumentNullException(nameof(services));
+        public static void AddAutoMapperSetup(this IServiceCollection services)
+        {
+            if (services == null)
+                throw new ArgumentNullException(nameof(services));
 
-        services.AddAutoMapper(typeof(RequestToCommandProfile));
+            services.AddAutoMapper(typeof(RequestToCommandProfile));
+        }
     }
 }

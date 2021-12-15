@@ -1,8 +1,11 @@
-﻿namespace KlirTechChallenge.Application.Promotion.ChangePromotion;
+﻿using System;
 
-public record ChangePromotionRequest
+namespace KlirTechChallenge.Application.Promotion.ChangePromotion
 {
-    public Guid PromotionId { get; init; }
-    public string Name { get; init; }
-    public bool Active { get; init; }
+    public class ChangePromotionRequest
+    {
+        public Guid PromotionId { get; init; }
+        public string Name { get; init; }
+        public bool Active { get; init; }
+    }
 }

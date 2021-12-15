@@ -2,45 +2,47 @@
 using KlirTechChallenge.Domain.SeedWork;
 using KlirTechChallenge.Domain.Customers;
 using KlirTechChallenge.Domain.Payments.Events;
+using System;
 
-namespace KlirTechChallenge.Domain.Payments;
-
-public class Payment : AggregateRoot<PaymentId>
+namespace KlirTechChallenge.Domain.Payments
 {
-    public OrderId OrderId { get; private set; }
-    public CustomerId CustomerId { get; private set; }
-    public DateTime CreatedAt { get; private set; }
-    public DateTime? PaidAt { get; private set; }
-    public PaymentStatus Status { get; private set; }
-
-    public static Payment CreateNew(CustomerId customerId, OrderId orderId)
+    public class Payment : AggregateRoot<PaymentId>
     {
-        if (orderId.Value == Guid.Empty)
-            throw new BusinessRuleException("The order is required.");
+        public OrderId OrderId { get; private set; }
+        public CustomerId CustomerId { get; private set; }
+        public DateTime CreatedAt { get; private set; }
+        public DateTime? PaidAt { get; private set; }
+        public PaymentStatus Status { get; private set; }
 
-        return new Payment(PaymentId.Of(Guid.NewGuid()), customerId, orderId);
+        public static Payment CreateNew(CustomerId customerId, OrderId orderId)
+        {
+            if (orderId.Value == Guid.Empty)
+                throw new BusinessRuleException("The order is required.");
+
+            return new Payment(PaymentId.Of(Guid.NewGuid()), customerId, orderId);
+        }
+
+        public void MarkAsPaid()
+        {
+            PaidAt = DateTime.Now;
+            Status = PaymentStatus.Paid;
+            AddDomainEvent(new PaymentAuthorizedEvent(Id));
+        }
+
+        private Payment(PaymentId id, CustomerId customerId, OrderId orderId)
+        {
+            if (orderId.Value == Guid.Empty)
+                throw new BusinessRuleException("The order is required.");
+
+            Id = id;
+            OrderId = orderId;
+            CustomerId = customerId;
+            CreatedAt = DateTime.Now;
+            Status = PaymentStatus.ToPay;
+            AddDomainEvent(new PaymentCreatedEvent(Id));
+        }
+
+        // Empty constructor for EF
+        private Payment() { }
     }
-
-    public void MarkAsPaid()
-    {
-        PaidAt = DateTime.Now;
-        Status = PaymentStatus.Paid;
-        AddDomainEvent(new PaymentAuthorizedEvent(Id));
-    }
-
-    private Payment(PaymentId id, CustomerId customerId, OrderId orderId)
-    {
-        if (orderId.Value == Guid.Empty)
-            throw new BusinessRuleException("The order is required.");
-
-        Id = id;
-        OrderId = orderId;
-        CustomerId = customerId;
-        CreatedAt = DateTime.Now;
-        Status = PaymentStatus.ToPay;
-        AddDomainEvent(new PaymentCreatedEvent(Id));
-    }
-
-    // Empty constructor for EF
-    private Payment() { }
 }

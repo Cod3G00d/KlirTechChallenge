@@ -9,46 +9,47 @@ using KlirTechChallenge.Application.Products.ListProducts;
 using KlirTechChallenge.Application.Core.CQRS.QueryHandling;
 using KlirTechChallenge.Application.Core.ExceptionHandling;
 
-namespace KlirTechChallenge.Application.Customers.ListCustomerEventHistory;
-
-public class ListProductsQueryHandler : QueryHandler<ListProductsQuery, IList<ProductViewModel>> 
+namespace KlirTechChallenge.Application.Customers.ListCustomerEventHistory
 {
-    private readonly IEcommerceUnitOfWork _unitOfWork;
-    private readonly ICurrencyConverter _currencyConverter;
-
-    public ListProductsQueryHandler(
-        IEcommerceUnitOfWork unitOfWork,
-        ICurrencyConverter currencyConverter)
+    public class ListProductsQueryHandler : QueryHandler<ListProductsQuery, IList<ProductViewModel>>
     {
-        _unitOfWork = unitOfWork;
-        _currencyConverter = currencyConverter;
-    }
+        private readonly IEcommerceUnitOfWork _unitOfWork;
+        private readonly ICurrencyConverter _currencyConverter;
 
-    public override async Task<IList<ProductViewModel>> ExecuteQuery(ListProductsQuery query, 
-        CancellationToken cancellationToken)
-    {
-        IList<ProductViewModel> productsViewModel = new List<ProductViewModel>();
-        var products = await _unitOfWork.Products
-            .ListAll(cancellationToken);
-
-        if (string.IsNullOrEmpty(query.Currency))
-            throw new ApplicationDataException("Currency code cannot be empty.");
-
-        var currency = Currency.FromCode(query.Currency);
-        foreach (var product in products)
+        public ListProductsQueryHandler(
+            IEcommerceUnitOfWork unitOfWork,
+            ICurrencyConverter currencyConverter)
         {
-            var convertedPrice = _currencyConverter
-                .Convert(currency, product.Price);
-
-            productsViewModel.Add(new ProductViewModel
-            {
-                Id = product.Id.Value,
-                Name = product.Name,
-                Price = Math.Round(convertedPrice.Value, 2).ToString(),
-                CurrencySymbol = currency.Symbol
-            });
+            _unitOfWork = unitOfWork;
+            _currencyConverter = currencyConverter;
         }
 
-        return productsViewModel;
+        public override async Task<IList<ProductViewModel>> ExecuteQuery(ListProductsQuery query,
+            CancellationToken cancellationToken)
+        {
+            IList<ProductViewModel> productsViewModel = new List<ProductViewModel>();
+            var products = await _unitOfWork.Products
+                .ListAll(cancellationToken);
+
+            if (string.IsNullOrEmpty(query.Currency))
+                throw new ApplicationDataException("Currency code cannot be empty.");
+
+            var currency = Currency.FromCode(query.Currency);
+            foreach (var product in products)
+            {
+                var convertedPrice = _currencyConverter
+                    .Convert(currency, product.Price);
+
+                productsViewModel.Add(new ProductViewModel
+                {
+                    Id = product.Id.Value,
+                    Name = product.Name,
+                    Price = Math.Round(convertedPrice.Value, 2).ToString(),
+                    CurrencySymbol = currency.Symbol
+                });
+            }
+
+            return productsViewModel;
+        }
     }
 }

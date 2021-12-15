@@ -2,31 +2,32 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 
-
-namespace KlirTechChallenge.WebApi.Configurations;
-
-public static class DatabaseSetup
+namespace KlirTechChallenge.WebApi.Configurations
 {
-    public static void AddDatabaseSetup(this IServiceCollection services, IConfiguration configuration)
+    public static class DatabaseSetup
     {
-        if (services == null)
-            throw new ArgumentNullException(nameof(services));
-
-        string connString = configuration.GetConnectionString("DefaultConnection");
-
-        services.AddDbContext<KlirTechChallengeContext>(options =>
+        public static void AddDatabaseSetup(this IServiceCollection services, IConfiguration configuration)
         {
-            options.UseSqlServer(connString,
-            sqlServerOptionsAction: sqlOptions =>
+            if (services == null)
+                throw new ArgumentNullException(nameof(services));
+
+            string connString = configuration.GetConnectionString("DefaultConnection");
+
+            services.AddDbContext<KlirTechChallengeContext>(options =>
             {
-                sqlOptions.EnableRetryOnFailure();
+                options.UseSqlServer(connString,
+                sqlServerOptionsAction: sqlOptions =>
+                {
+                    sqlOptions.EnableRetryOnFailure();
+                });
             });
-        });
 
-        services.AddDbContextPool<IdentityContext>(options =>
-        {
-            options.UseSqlServer(connString);
-        });
+            services.AddDbContextPool<IdentityContext>(options =>
+            {
+                options.UseSqlServer(connString);
+            });
+        }
     }
 }

@@ -9,38 +9,39 @@ using KlirTechChallenge.Application.Core.CQRS.QueryHandling;
 using KlirTechChallenge.Application.Core.ExceptionHandling;
 using KlirTechChallenge.Application.Promotion.Promotions;
 
-namespace KlirTechChallenge.Application.Customers.ListCustomerEventHistory;
-
-public class ListPromotionsQueryHandler : QueryHandler<ListPromotionsQuery, IList<PromotionsViewModel>> 
+namespace KlirTechChallenge.Application.Customers.ListCustomerEventHistory
 {
-    private readonly IEcommerceUnitOfWork _unitOfWork;
-
-    public ListPromotionsQueryHandler(
-        IEcommerceUnitOfWork unitOfWork,
-        ICurrencyConverter currencyConverter)
+    public class ListPromotionsQueryHandler : QueryHandler<ListPromotionsQuery, IList<PromotionsViewModel>>
     {
-        _unitOfWork = unitOfWork;
-    }
+        private readonly IEcommerceUnitOfWork _unitOfWork;
 
-    public override async Task<IList<PromotionsViewModel>> ExecuteQuery(ListPromotionsQuery query, 
-        CancellationToken cancellationToken)
-    {
-        IList<PromotionsViewModel> PromotionsViewModel = new List<PromotionsViewModel>();
-        var Promotions = await _unitOfWork.Promotions
-            .ListAll(cancellationToken);
-
-
-        foreach (var Promotion in Promotions)
+        public ListPromotionsQueryHandler(
+            IEcommerceUnitOfWork unitOfWork,
+            ICurrencyConverter currencyConverter)
         {
-           
-            PromotionsViewModel.Add(new PromotionsViewModel
-            {
-                Id = Promotion.Id.Value,
-                Name = Promotion.Name,
-                Active = Promotion.Active
-            });
+            _unitOfWork = unitOfWork;
         }
 
-        return PromotionsViewModel;
+        public override async Task<IList<PromotionsViewModel>> ExecuteQuery(ListPromotionsQuery query,
+            CancellationToken cancellationToken)
+        {
+            IList<PromotionsViewModel> PromotionsViewModel = new List<PromotionsViewModel>();
+            var Promotions = await _unitOfWork.Promotions
+                .ListAll(cancellationToken);
+
+
+            foreach (var Promotion in Promotions)
+            {
+
+                PromotionsViewModel.Add(new PromotionsViewModel
+                {
+                    Id = Promotion.Id.Value,
+                    Name = Promotion.Name,
+                    Active = Promotion.Active
+                });
+            }
+
+            return PromotionsViewModel;
+        }
     }
 }

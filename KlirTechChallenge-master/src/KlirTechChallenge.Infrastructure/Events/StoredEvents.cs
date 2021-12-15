@@ -3,46 +3,51 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using KlirTechChallenge.Domain.Core.Events;
 using KlirTechChallenge.Infrastructure.Database.Context;
+using System;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using System.Threading;
 
-namespace KlirTechChallenge.Infrastructure.Events;
-
-public class StoredEvents : IStoredEvents
+namespace KlirTechChallenge.Infrastructure.Events
 {
-    private readonly KlirTechChallengeContext _dbContext;
-
-    public StoredEvents(KlirTechChallengeContext dbContext)
+    public class StoredEvents : IStoredEvents
     {
-        _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
-    }
+        private readonly KlirTechChallengeContext _dbContext;
 
-    public void UpdateProcessedAt(StoredEvent message)
-    {
-        _dbContext.StoredEvents.Update(message);
-    }
+        public StoredEvents(KlirTechChallengeContext dbContext)
+        {
+            _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+        }
 
-    public async Task StoreRange(List<StoredEvent> messages)
-    {
-        await _dbContext.StoredEvents.AddRangeAsync(messages);
-    }
+        public void UpdateProcessedAt(StoredEvent message)
+        {
+            _dbContext.StoredEvents.Update(message);
+        }
 
-    public async Task<IList<StoredEvent>> GetByAggregateId(Guid aggregateId, CancellationToken cancellationToken)
-    {
-        var results = await _dbContext.StoredEvents
-            .Where(c => c.AggregateId == aggregateId)
-            .OrderBy(m => m.CreatedAt)
-            .ToListAsync(cancellationToken);
+        public async Task StoreRange(List<StoredEvent> messages)
+        {
+            await _dbContext.StoredEvents.AddRangeAsync(messages);
+        }
 
-        return results;
-    }
+        public async Task<IList<StoredEvent>> GetByAggregateId(Guid aggregateId, CancellationToken cancellationToken)
+        {
+            var results = await _dbContext.StoredEvents
+                .Where(c => c.AggregateId == aggregateId)
+                .OrderBy(m => m.CreatedAt)
+                .ToListAsync(cancellationToken);
 
-    public async Task<IReadOnlyCollection<StoredEvent>> FetchUnprocessed(int batchSize, CancellationToken cancellationToken)
-    {
-        var results = await _dbContext.StoredEvents
-            .Where(m => null == m.ProcessedAt)
-            .OrderBy(m => m.CreatedAt)
-            .Take(batchSize)
-            .ToArrayAsync(cancellationToken);
+            return results;
+        }
 
-        return results.ToImmutableArray();
+        public async Task<IReadOnlyCollection<StoredEvent>> FetchUnprocessed(int batchSize, CancellationToken cancellationToken)
+        {
+            var results = await _dbContext.StoredEvents
+                .Where(m => null == m.ProcessedAt)
+                .OrderBy(m => m.CreatedAt)
+                .Take(batchSize)
+                .ToArrayAsync(cancellationToken);
+
+            return results.ToImmutableArray();
+        }
     }
 }

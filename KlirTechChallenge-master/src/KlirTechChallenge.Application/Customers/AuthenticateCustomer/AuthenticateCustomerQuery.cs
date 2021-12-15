@@ -1,31 +1,32 @@
-﻿global using FluentValidation;
-global using FluentValidation.Results;
+﻿using FluentValidation;
+using FluentValidation.Results;
 using KlirTechChallenge.Application.Core.CQRS.QueryHandling;
 
-namespace KlirTechChallenge.Application.Customers.AuthenticateCustomer;
-
-public record class AuthenticateCustomerQuery : Query<CustomerViewModel>
+namespace KlirTechChallenge.Application.Customers.AuthenticateCustomer
 {
-    public string Email { get; init; }
-    public string Password { get; init; }
-
-    public AuthenticateCustomerQuery(string email, string password)
+    public  class AuthenticateCustomerQuery : Query<CustomerViewModel>
     {
-        Email = email;
-        Password = password;
+        public string Email { get; init; }
+        public string Password { get; init; }
+
+        public AuthenticateCustomerQuery(string email, string password)
+        {
+            Email = email;
+            Password = password;
+        }
+
+        public override ValidationResult Validate()
+        {
+            return new AuthenticateCustomerQueryValidator().Validate(this);
+        }
     }
 
-    public override ValidationResult Validate()
+    public class AuthenticateCustomerQueryValidator : AbstractValidator<AuthenticateCustomerQuery>
     {
-        return new AuthenticateCustomerQueryValidator().Validate(this);
-    }
-}
-
-public class AuthenticateCustomerQueryValidator : AbstractValidator<AuthenticateCustomerQuery>
-{
-    public AuthenticateCustomerQueryValidator()
-    {
-        RuleFor(x => x.Email).NotEmpty().WithMessage("Email is empty.");
-        RuleFor(x => x.Email).NotEmpty().WithMessage("Password is empty.");
+        public AuthenticateCustomerQueryValidator()
+        {
+            RuleFor(x => x.Email).NotEmpty().WithMessage("Email is empty.");
+            RuleFor(x => x.Email).NotEmpty().WithMessage("Password is empty.");
+        }
     }
 }

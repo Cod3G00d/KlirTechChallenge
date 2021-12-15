@@ -5,33 +5,34 @@ using FluentAssertions;
 using KlirTechChallenge.Domain.Customers;
 using KlirTechChallenge.Domain.SeedWork;
 
-namespace KlirTechChallenge.Tests;
-
-public class CustomerUniquenessCheckerTests
+namespace KlirTechChallenge.Tests
 {
-    const string name = "Customer";
-    const string email = "test@email.com";        
-
-    [Fact]
-    public void Customer_email_is_available()
+    public class CustomerUniquenessCheckerTests
     {
-        var customerUniquenessChecker = Substitute.For<ICustomerUniquenessChecker>();
-        customerUniquenessChecker.IsUserUnique(email).Returns(true);
+        const string name = "Customer";
+        const string email = "test@email.com";
 
-        var customer = Customer.CreateNew(email, name, customerUniquenessChecker);
+        [Fact]
+        public void Customer_email_is_available()
+        {
+            var customerUniquenessChecker = Substitute.For<ICustomerUniquenessChecker>();
+            customerUniquenessChecker.IsUserUnique(email).Returns(true);
 
-        customer.Email.Should().Be(email);
-    }
+            var customer = Customer.CreateNew(email, name, customerUniquenessChecker);
 
-    [Fact]
-    public void Customer_email_is_already_in_use()
-    {
-        var customerUniquenessChecker = Substitute.For<ICustomerUniquenessChecker>();
-        customerUniquenessChecker.IsUserUnique(email).Returns(false);
+            customer.Email.Should().Be(email);
+        }
 
-        Action action = () => 
-            Customer.CreateNew(email, name, customerUniquenessChecker);
+        [Fact]
+        public void Customer_email_is_already_in_use()
+        {
+            var customerUniquenessChecker = Substitute.For<ICustomerUniquenessChecker>();
+            customerUniquenessChecker.IsUserUnique(email).Returns(false);
 
-        action.Should().Throw<BusinessRuleException>();
+            Action action = () =>
+                Customer.CreateNew(email, name, customerUniquenessChecker);
+
+            action.Should().Throw<BusinessRuleException>();
+        }
     }
 }

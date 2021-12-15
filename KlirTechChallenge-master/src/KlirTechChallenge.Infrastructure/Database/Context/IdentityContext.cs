@@ -1,31 +1,34 @@
 ﻿using KlirTechChallenge.Infrastructure.Identity.Users;
 using KlirTechChallenge.Infrastructure.Identity.Roles;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using System;
 
-namespace KlirTechChallenge.Infrastructure.Database.Context;
-
-public class IdentityContext : IdentityDbContext<ApplicationUser, UserRole, Guid>
+namespace KlirTechChallenge.Infrastructure.Database.Context
 {
-    public IdentityContext(DbContextOptions<IdentityContext> options)
-        : base(options)
+    public class IdentityContext : IdentityDbContext<ApplicationUser, UserRole, Guid>
     {
-        Database.Migrate();
-    }
-
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        modelBuilder.Entity<ApplicationUser>(b =>
+        public IdentityContext(DbContextOptions<IdentityContext> options)
+            : base(options)
         {
-            b.Property(u => u.Id)
-                .HasDefaultValueSql("newsequentialid()");
-        });
+            Database.Migrate();
+        }
 
-        modelBuilder.Entity<UserRole>(b =>
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            b.Property(u => u.Id)
-                .HasDefaultValueSql("newsequentialid()");
-        });
+            modelBuilder.Entity<ApplicationUser>(b =>
+            {
+                b.Property(u => u.Id)
+                    .HasDefaultValueSql("newsequentialid()");
+            });
 
-        base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<UserRole>(b =>
+            {
+                b.Property(u => u.Id)
+                    .HasDefaultValueSql("newsequentialid()");
+            });
+
+            base.OnModelCreating(modelBuilder);
+        }
     }
 }

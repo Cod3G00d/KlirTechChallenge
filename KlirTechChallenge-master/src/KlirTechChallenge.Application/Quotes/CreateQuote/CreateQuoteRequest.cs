@@ -1,6 +1,8 @@
-﻿namespace KlirTechChallenge.Application.Quotes.SaveQuote
+﻿using System;
+
+namespace KlirTechChallenge.Application.Quotes.SaveQuote
 {
-    public record CreateQuoteRequest
+    public class  CreateQuoteRequest
     {
         public Guid CustomerId { get; init; }
         public ProductDto Product { get; init; }

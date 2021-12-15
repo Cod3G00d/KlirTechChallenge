@@ -1,6 +1,7 @@
-﻿namespace KlirTechChallenge.Domain.Customers;
-
-public interface ICustomerUniquenessChecker
+﻿namespace KlirTechChallenge.Domain.Customers
 {
-    bool IsUserUnique(string customerEmail);
+    public interface ICustomerUniquenessChecker
+    {
+        bool IsUserUnique(string customerEmail);
+    }
 }

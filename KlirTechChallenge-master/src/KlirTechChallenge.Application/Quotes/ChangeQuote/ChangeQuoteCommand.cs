@@ -1,29 +1,33 @@
-﻿using KlirTechChallenge.Application.Core.CQRS.CommandHandling;
+﻿using FluentValidation;
+using FluentValidation.Results;
+using KlirTechChallenge.Application.Core.CQRS.CommandHandling;
+using System;
 
-namespace KlirTechChallenge.Application.Quotes.ChangeQuote;
-
-public record class ChangeQuoteCommand : Command<Guid>
+namespace KlirTechChallenge.Application.Quotes.ChangeQuote
 {
-    public Guid QuoteId { get; init; }
-    public ProductDto Product { get; init; }
-
-    public ChangeQuoteCommand(Guid quoteId, ProductDto product)
+    public class ChangeQuoteCommand : Command<Guid>
     {
-        QuoteId = quoteId;
-        Product = product;
+        public Guid QuoteId { get; init; }
+        public ProductDto Product { get; init; }
+
+        public ChangeQuoteCommand(Guid quoteId, ProductDto product)
+        {
+            QuoteId = quoteId;
+            Product = product;
+        }
+
+        public override ValidationResult Validate()
+        {
+            return new ChangeQuoteCommandValidator().Validate(this);
+        }
     }
 
-    public override ValidationResult Validate()
+    public class ChangeQuoteCommandValidator : AbstractValidator<ChangeQuoteCommand>
     {
-        return new ChangeQuoteCommandValidator().Validate(this);
-    }
-}
-
-public class ChangeQuoteCommandValidator : AbstractValidator<ChangeQuoteCommand>
-{
-    public ChangeQuoteCommandValidator()
-    {
-        RuleFor(x => x.QuoteId).NotEqual(Guid.Empty).WithMessage("QuoteId is empty.");
-        RuleFor(x => x.Product).NotNull().WithMessage("Product is empty.");
+        public ChangeQuoteCommandValidator()
+        {
+            RuleFor(x => x.QuoteId).NotEqual(Guid.Empty).WithMessage("QuoteId is empty.");
+            RuleFor(x => x.Product).NotNull().WithMessage("Product is empty.");
+        }
     }
 }

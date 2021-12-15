@@ -7,61 +7,62 @@ using KlirTechChallenge.Application.Orders;
 using KlirTechChallenge.Domain.Payments.Events;
 using KlirTechChallenge.Application.Core.ExceptionHandling;
 
-namespace KlirTechChallenge.Application.Payments;
-
-public class PaymentCreatedEventHandler : INotificationHandler<PaymentCreatedEvent>
+namespace KlirTechChallenge.Application.Payments
 {
-    private readonly IEcommerceUnitOfWork _unitOfWork;
-    private readonly IOrderStatusWorkflow _orderStatusWorkflow;
-    private readonly IMediator _mediator;
-    private readonly IOrderStatusBroadcaster _orderStatusBroadcaster;
-
-    public PaymentCreatedEventHandler(
-        IEcommerceUnitOfWork unitOfWork,
-        IOrderStatusWorkflow orderStatusWorkflow,            
-        IMediator mediator,
-        IOrderStatusBroadcaster orderStatusBroadcaster)
+    public class PaymentCreatedEventHandler : INotificationHandler<PaymentCreatedEvent>
     {
-        _unitOfWork = unitOfWork;
-        _orderStatusWorkflow = orderStatusWorkflow;
-        _mediator = mediator;
-        _orderStatusBroadcaster = orderStatusBroadcaster;
-    }
+        private readonly IEcommerceUnitOfWork _unitOfWork;
+        private readonly IOrderStatusWorkflow _orderStatusWorkflow;
+        private readonly IMediator _mediator;
+        private readonly IOrderStatusBroadcaster _orderStatusBroadcaster;
 
-    public async Task Handle(PaymentCreatedEvent paymentCreatedEvent
-        , CancellationToken cancellationToken)
-    {
-        var payment = await _unitOfWork.Payments
-            .GetById(paymentCreatedEvent.PaymentId, cancellationToken);
+        public PaymentCreatedEventHandler(
+            IEcommerceUnitOfWork unitOfWork,
+            IOrderStatusWorkflow orderStatusWorkflow,
+            IMediator mediator,
+            IOrderStatusBroadcaster orderStatusBroadcaster)
+        {
+            _unitOfWork = unitOfWork;
+            _orderStatusWorkflow = orderStatusWorkflow;
+            _mediator = mediator;
+            _orderStatusBroadcaster = orderStatusBroadcaster;
+        }
 
-        var customer = await _unitOfWork.Customers
-            .GetById(payment.CustomerId, cancellationToken);
+        public async Task Handle(PaymentCreatedEvent paymentCreatedEvent
+            , CancellationToken cancellationToken)
+        {
+            var payment = await _unitOfWork.Payments
+                .GetById(paymentCreatedEvent.PaymentId, cancellationToken);
 
-        var order = await _unitOfWork.Orders
-            .GetById(payment.OrderId, cancellationToken);
+            var customer = await _unitOfWork.Customers
+                .GetById(payment.CustomerId, cancellationToken);
 
-        if (payment == null)
-            throw new ApplicationDataException("Payment not found.");
+            var order = await _unitOfWork.Orders
+                .GetById(payment.OrderId, cancellationToken);
 
-        if (customer == null)
-            throw new ApplicationDataException("Customer not found.");
+            if (payment == null)
+                throw new ApplicationDataException("Payment not found.");
 
-        if (order == null)
-            throw new ApplicationDataException("order not found.");
+            if (customer == null)
+                throw new ApplicationDataException("Customer not found.");
 
-        // Changing order status
-        _orderStatusWorkflow.CalculateOrderStatus(order, payment);
-        await _unitOfWork.CommitAsync(cancellationToken);
+            if (order == null)
+                throw new ApplicationDataException("order not found.");
 
-        // Attempting to pay
-        MakePaymentCommand command = new MakePaymentCommand(paymentCreatedEvent.PaymentId.Value);
-        await _mediator.Send(command, cancellationToken);
+            // Changing order status
+            _orderStatusWorkflow.CalculateOrderStatus(order, payment);
+            await _unitOfWork.CommitAsync(cancellationToken);
 
-        // Broadcasting order update
-        await _orderStatusBroadcaster.BroadcastOrderStatus(
-            customer.Id,
-            order.Id,
-            order.Status
-        );
+            // Attempting to pay
+            MakePaymentCommand command = new MakePaymentCommand(paymentCreatedEvent.PaymentId.Value);
+            await _mediator.Send(command, cancellationToken);
+
+            // Broadcasting order update
+            await _orderStatusBroadcaster.BroadcastOrderStatus(
+                customer.Id,
+                order.Id,
+                order.Status
+            );
+        }
     }
 }

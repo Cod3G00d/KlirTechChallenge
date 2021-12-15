@@ -1,15 +1,16 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 
-namespace KlirTechChallenge.Infrastructure.Identity.Claims;
-
-public record class ClaimRequirement : IAuthorizationRequirement
+namespace KlirTechChallenge.Infrastructure.Identity.Claims
 {
-    public ClaimRequirement(string claimName, string claimValue)
+    public  class ClaimRequirement : IAuthorizationRequirement
     {
-        ClaimName = claimName;
-        ClaimValue = claimValue;
-    }
+        public ClaimRequirement(string claimName, string claimValue)
+        {
+            ClaimName = claimName;
+            ClaimValue = claimValue;
+        }
 
-    public string ClaimName { get; set; }
-    public string ClaimValue { get; set; }
+        public string ClaimName { get; set; }
+        public string ClaimValue { get; set; }
+    }
 }

@@ -1,14 +1,16 @@
-﻿namespace KlirTechChallenge.Infrastructure.Domain.CurrencyExchange;
-public record class ExchangeRate
+﻿namespace KlirTechChallenge.Infrastructure.Domain.CurrencyExchange
 {
-    public string FromCurrency { get; private set; }
-    public string ToCurrency { get; private set; }
-    public decimal ConversionRate { get; private set; }
-
-    public ExchangeRate(string sourceCurrency, string targetCurrency, decimal conversionRate)
+    public  class ExchangeRate
     {
-        FromCurrency = sourceCurrency;
-        ToCurrency = targetCurrency;
-        ConversionRate = conversionRate;
+        public string FromCurrency { get; private set; }
+        public string ToCurrency { get; private set; }
+        public decimal ConversionRate { get; private set; }
+
+        public ExchangeRate(string sourceCurrency, string targetCurrency, decimal conversionRate)
+        {
+            FromCurrency = sourceCurrency;
+            ToCurrency = targetCurrency;
+            ConversionRate = conversionRate;
+        }
     }
 }

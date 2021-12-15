@@ -1,14 +1,15 @@
 ﻿using KlirTechChallenge.Domain.Core.Events;
 
-namespace KlirTechChallenge.Domain.Payments.Events;
-
-public record class PaymentCreatedEvent : DomainEvent
+namespace KlirTechChallenge.Domain.Payments.Events
 {
-    public PaymentId PaymentId { get; init; }
-
-    public PaymentCreatedEvent(PaymentId paymentId)
+    public  class PaymentCreatedEvent : DomainEvent
     {
-        PaymentId = paymentId;
-        AggregateId = paymentId.Value;
+        public PaymentId PaymentId { get; init; }
+
+        public PaymentCreatedEvent(PaymentId paymentId)
+        {
+            PaymentId = paymentId;
+            AggregateId = paymentId.Value;
+        }
     }
 }

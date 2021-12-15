@@ -1,8 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace KlirTechChallenge.Application.Orders.GetOrderDetails
 {
-    public record class GetOrderDetailsRequest
+    public  class GetOrderDetailsRequest
     {
         [Required(ErrorMessage = "The {0} field is required.")]
         public Guid OrderId { get; init; }

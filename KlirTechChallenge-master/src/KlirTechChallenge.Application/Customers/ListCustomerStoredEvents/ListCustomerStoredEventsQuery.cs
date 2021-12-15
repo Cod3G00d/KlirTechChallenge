@@ -1,28 +1,32 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using FluentValidation;
+using FluentValidation.Results;
 using KlirTechChallenge.Application.Core.CQRS.QueryHandling;
 using KlirTechChallenge.Application.Core.EventSourcing.StoredEventsData;
 
-namespace KlirTechChallenge.Application.Customers.ListCustomerStoredEvents;
-
-public record class ListCustomerStoredEventsQuery : Query<IList<CustomerStoredEventData>>
+namespace KlirTechChallenge.Application.Customers.ListCustomerStoredEvents
 {
-    public Guid CustomerId { get; init; }
-
-    public ListCustomerStoredEventsQuery(Guid customerId)
+    public  class ListCustomerStoredEventsQuery : Query<IList<CustomerStoredEventData>>
     {
-        CustomerId = customerId;
+        public Guid CustomerId { get; init; }
+
+        public ListCustomerStoredEventsQuery(Guid customerId)
+        {
+            CustomerId = customerId;
+        }
+
+        public override ValidationResult Validate()
+        {
+            return new ListCustomerStoredEventsQueryValidator().Validate(this);
+        }
     }
 
-    public override ValidationResult Validate()
+    public class ListCustomerStoredEventsQueryValidator : AbstractValidator<ListCustomerStoredEventsQuery>
     {
-        return new ListCustomerStoredEventsQueryValidator().Validate(this);
-    }
-}
-
-public class ListCustomerStoredEventsQueryValidator : AbstractValidator<ListCustomerStoredEventsQuery>
-{
-    public ListCustomerStoredEventsQueryValidator()
-    {
-        RuleFor(x => x.CustomerId).NotEqual(Guid.Empty).WithMessage("CustomerId is empty.");
+        public ListCustomerStoredEventsQueryValidator()
+        {
+            RuleFor(x => x.CustomerId).NotEqual(Guid.Empty).WithMessage("CustomerId is empty.");
+        }
     }
 }

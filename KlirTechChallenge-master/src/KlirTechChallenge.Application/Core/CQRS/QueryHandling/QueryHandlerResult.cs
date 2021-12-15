@@ -1,17 +1,22 @@
-﻿namespace KlirTechChallenge.Application.Core.CQRS.QueryHandling;
+﻿
 
-/// <summary>
-/// QueryHandler result class
-/// </summary>
-/// <typeparam name="TResult"></typeparam>
-public record class QueryHandlerResult<TResult>
+using FluentValidation.Results;
+
+namespace KlirTechChallenge.Application.Core.CQRS.QueryHandling
 {
-    public ValidationResult ValidationResult { get; }
-
-    public TResult Result { get; set; }
-
-    public QueryHandlerResult(IQuery<QueryHandlerResult<TResult>> query)
+    /// <summary>
+    /// QueryHandler result class
+    /// </summary>
+    /// <typeparam name="TResult"></typeparam>
+    public  class QueryHandlerResult<TResult>
     {
-        ValidationResult = query.Validate();
+        public ValidationResult ValidationResult { get; }
+
+        public TResult Result { get; set; }
+
+        public QueryHandlerResult(IQuery<QueryHandlerResult<TResult>> query)
+        {
+            ValidationResult = query.Validate();
+        }
     }
 }

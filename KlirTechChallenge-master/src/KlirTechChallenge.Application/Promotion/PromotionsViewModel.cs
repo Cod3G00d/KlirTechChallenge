@@ -1,9 +1,14 @@
-﻿namespace KlirTechChallenge.Application.Promotions;
+﻿using System;
 
-public record PromotionsViewModel
+namespace KlirTechChallenge.Application.Promotions
 {
-    public Guid Id { get; init; }
-    public string Name { get; init; }
-    public bool Active { get; init; }
+  
 
+    public class PromotionsViewModel
+    {
+        public Guid Id { get; init; }
+        public string Name { get; init; }
+        public bool Active { get; init; }
+
+    }
 }

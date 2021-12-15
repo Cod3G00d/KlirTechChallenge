@@ -1,8 +1,9 @@
 ﻿using System;
 
-namespace KlirTechChallenge.Application.Core.ExceptionHandling;
-
-public class ApplicationDataException : Exception
+namespace KlirTechChallenge.Application.Core.ExceptionHandling
 {
-    public ApplicationDataException(string message) : base(message) { }
+    public class ApplicationDataException : Exception
+    {
+        public ApplicationDataException(string message) : base(message) { }
+    }
 }

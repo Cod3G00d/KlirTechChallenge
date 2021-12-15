@@ -6,27 +6,28 @@ using KlirTechChallenge.Application.Core.CQRS.QueryHandling;
 using KlirTechChallenge.Application.Core.EventSourcing;
 using KlirTechChallenge.Application.Core.EventSourcing.StoredEventsData;
 
-namespace KlirTechChallenge.Application.Customers.ListCustomerStoredEvents;
-
-public class ListCustomerStoredEventsQueryHandler : QueryHandler<ListCustomerStoredEventsQuery, 
-    IList<CustomerStoredEventData>> 
+namespace KlirTechChallenge.Application.Customers.ListCustomerStoredEvents
 {
-    private readonly IEcommerceUnitOfWork _unitOfWork;
-
-    public ListCustomerStoredEventsQueryHandler(IEcommerceUnitOfWork unitOfWork)
+    public class ListCustomerStoredEventsQueryHandler : QueryHandler<ListCustomerStoredEventsQuery,
+        IList<CustomerStoredEventData>>
     {
-        _unitOfWork = unitOfWork;
-    }
+        private readonly IEcommerceUnitOfWork _unitOfWork;
 
-    public override async Task<IList<CustomerStoredEventData>> ExecuteQuery(ListCustomerStoredEventsQuery request, 
-        CancellationToken cancellationToken)
-    {
-        var storedEvents = await _unitOfWork.StoredEvents
-            .GetByAggregateId(request.CustomerId, cancellationToken);
+        public ListCustomerStoredEventsQueryHandler(IEcommerceUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+        }
 
-        IList<CustomerStoredEventData> customerStoredEvents = StoredEventPrettier<CustomerStoredEventData>
-            .ToPretty(storedEvents);
+        public override async Task<IList<CustomerStoredEventData>> ExecuteQuery(ListCustomerStoredEventsQuery request,
+            CancellationToken cancellationToken)
+        {
+            var storedEvents = await _unitOfWork.StoredEvents
+                .GetByAggregateId(request.CustomerId, cancellationToken);
 
-        return customerStoredEvents;
+            IList<CustomerStoredEventData> customerStoredEvents = StoredEventPrettier<CustomerStoredEventData>
+                .ToPretty(storedEvents);
+
+            return customerStoredEvents;
+        }
     }
 }

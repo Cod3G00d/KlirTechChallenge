@@ -1,19 +1,21 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
-namespace KlirTechChallenge.Application.Quotes;
-
-public record class ProductDto
+namespace KlirTechChallenge.Application.Quotes
 {
-    [Required(ErrorMessage = "The {0} field is mandatory")]
-    public Guid Id { get; init; }
-
-    [Required(ErrorMessage = "The {0} field is mandatory")]
-    [Range(int.MinValue, int.MaxValue, ErrorMessage = "Price value is invalid")]
-    public int Quantity { get; init; }
-
-    public ProductDto(Guid id, int quantity)
+    public  class ProductDto
     {
-        Id = id;
-        Quantity = quantity;
+        [Required(ErrorMessage = "The {0} field is mandatory")]
+        public Guid Id { get; init; }
+
+        [Required(ErrorMessage = "The {0} field is mandatory")]
+        [Range(int.MinValue, int.MaxValue, ErrorMessage = "Price value is invalid")]
+        public int Quantity { get; init; }
+
+        public ProductDto(Guid id, int quantity)
+        {
+            Id = id;
+            Quantity = quantity;
+        }
     }
 }

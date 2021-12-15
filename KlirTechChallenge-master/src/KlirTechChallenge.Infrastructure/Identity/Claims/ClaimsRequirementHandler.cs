@@ -1,21 +1,23 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 
-namespace KlirTechChallenge.Infrastructure.Identity.Claims;
-
-public class ClaimsRequirementHandler : AuthorizationHandler<ClaimRequirement>
+namespace KlirTechChallenge.Infrastructure.Identity.Claims
 {
-    protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, 
-        ClaimRequirement requirement)
+    public class ClaimsRequirementHandler : AuthorizationHandler<ClaimRequirement>
     {
-        var claim = context.User.Claims
-            .FirstOrDefault(c => c.Type == requirement.ClaimName);
-
-        if (claim != null && claim.Value.Contains(requirement.ClaimValue))
+        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context,
+            ClaimRequirement requirement)
         {
-            context.Succeed(requirement);
-        }
+            var claim = context.User.Claims
+                .FirstOrDefault(c => c.Type == requirement.ClaimName);
 
-        return Task.CompletedTask;
+            if (claim != null && claim.Value.Contains(requirement.ClaimValue))
+            {
+                context.Succeed(requirement);
+            }
+
+            return Task.CompletedTask;
+        }
     }
 }

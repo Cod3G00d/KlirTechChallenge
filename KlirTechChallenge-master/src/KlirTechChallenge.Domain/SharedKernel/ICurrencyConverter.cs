@@ -1,7 +1,8 @@
-﻿namespace KlirTechChallenge.Domain.SharedKernel;
-
-public interface ICurrencyConverter
+﻿namespace KlirTechChallenge.Domain.SharedKernel
 {
-    Currency GetBaseCurrency();
-    Money Convert(Currency currency, Money value);
+    public interface ICurrencyConverter
+    {
+        Currency GetBaseCurrency();
+        Money Convert(Currency currency, Money value);
+    }
 }

@@ -1,52 +1,54 @@
 ﻿using KlirTechChallenge.Domain.Products;
 using KlirTechChallenge.Domain.Promotions;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore;
 
-namespace KlirTechChallenge.Infrastructure.Database.Configurations;
-
-internal sealed class ProductConfiguration : IEntityTypeConfiguration<Product>
+namespace KlirTechChallenge.Infrastructure.Database.Configurations
 {
-    public void Configure(EntityTypeBuilder<Product> builder)
+    internal sealed class ProductConfiguration : IEntityTypeConfiguration<Product>
     {
-        builder.ToTable("Products", "dbo");
+        public void Configure(EntityTypeBuilder<Product> builder)
+        {
+            builder.ToTable("Products", "dbo");
 
-        builder.HasKey(x => x.Id);
-        builder.Property(x => x.Id)
-        .HasConversion(
+            builder.HasKey(x => x.Id);
+            builder.Property(x => x.Id)
+            .HasConversion(
+                v => v.Value,
+                v => new ProductId(v));
+
+            builder.Property(e => e.CreationDate);
+            builder.Property(e => e.Name)
+            .HasMaxLength(25).IsRequired();
+
+            builder.Property(x => x.PromotionId)
+            .HasConversion(
             v => v.Value,
-            v => new ProductId(v));
+            v => new PromotionId(v));
 
-        builder.Property(e => e.CreationDate);
-        builder.Property(e => e.Name)
-        .HasMaxLength(25).IsRequired();
+            builder.OwnsOne(e => e.Price, b =>
+            {
+                b.Property(e => e.Value)
+                .HasColumnName("Price")
+                .HasColumnType("decimal(5,2)");
 
-        builder.Property(x => x.PromotionId)
-        .HasConversion(
-        v => v.Value,
-        v => new PromotionId(v));
+                b.Property(e => e.CurrencyCode)
+                .HasColumnName("Currency")
+                .HasMaxLength(5)
+                .IsRequired();
+            });
 
-        builder.OwnsOne(e => e.Price, b =>
-        {
-            b.Property(e => e.Value)
-            .HasColumnName("Price")
-            .HasColumnType("decimal(5,2)");
+            builder.OwnsOne(e => e.Price, b =>
+            {
+                b.Property(e => e.Value)
+                .HasColumnName("Price")
+                .HasColumnType("decimal(5,2)");
 
-            b.Property(e => e.CurrencyCode)
-            .HasColumnName("Currency")
-            .HasMaxLength(5)
-            .IsRequired();
-        });
-
-        builder.OwnsOne(e => e.Price, b =>
-        {
-            b.Property(e => e.Value)
-            .HasColumnName("Price")
-            .HasColumnType("decimal(5,2)");
-
-            b.Property(e => e.CurrencyCode)
-            .HasColumnName("Currency")
-            .HasMaxLength(5)
-            .IsRequired();
-        });
+                b.Property(e => e.CurrencyCode)
+                .HasColumnName("Currency")
+                .HasMaxLength(5)
+                .IsRequired();
+            });
+        }
     }
 }

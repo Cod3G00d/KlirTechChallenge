@@ -1,9 +1,10 @@
-﻿namespace KlirTechChallenge.Domain.Orders;
-
-public enum OrderStatus
+﻿namespace KlirTechChallenge.Domain.Orders
 {
-    Placed = 1,
-    WaitingForPayment = 2,
-    ReadyToShip = 3,
-    Canceled = 0
+    public enum OrderStatus
+    {
+        Placed = 1,
+        WaitingForPayment = 2,
+        ReadyToShip = 3,
+        Canceled = 0
+    }
 }

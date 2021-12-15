@@ -1,13 +1,14 @@
 ﻿using AutoMapper;
 using KlirTechChallenge.Application.Customers.RegisterCustomer;
 
-namespace KlirTechChallenge.Application.Core.AutoMapper;
-
-public class RequestToCommandProfile : Profile
+namespace KlirTechChallenge.Application.Core.AutoMapper
 {
-    public RequestToCommandProfile()
+    public class RequestToCommandProfile : Profile
     {
-        CreateMap<RegisterCustomerRequest, RegisterCustomerCommand>()
-        .ConstructUsing(c => new RegisterCustomerCommand(c.Email, c.Name, c.Password, c.PasswordConfirm));
+        public RequestToCommandProfile()
+        {
+            CreateMap<RegisterCustomerRequest, RegisterCustomerCommand>()
+            .ConstructUsing(c => new RegisterCustomerCommand(c.Email, c.Name, c.Password, c.PasswordConfirm));
+        }
     }
 }

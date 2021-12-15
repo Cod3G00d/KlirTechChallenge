@@ -1,32 +1,36 @@
-﻿using KlirTechChallenge.Application.Core.CQRS.CommandHandling;
+﻿using FluentValidation;
+using FluentValidation.Results;
+using KlirTechChallenge.Application.Core.CQRS.CommandHandling;
+using System;
 
-namespace KlirTechChallenge.Application.Promotion.ChangePromotion;
-
-public record class ChangePromotionCommand : Command<Guid>
+namespace KlirTechChallenge.Application.Promotion.ChangePromotion
 {
-    public Guid PromotionId { get; init; }
-    public string Name { get; init; }
-    public bool Active { get; init; }
-
-
-    public ChangePromotionCommand(Guid promotionId, string name, bool active)
+    public class ChangePromotionCommand : Command<Guid>
     {
-        PromotionId = promotionId;
-        Name = name;
-        Active = active;
+        public Guid PromotionId { get; init; }
+        public string Name { get; init; }
+        public bool Active { get; init; }
+
+
+        public ChangePromotionCommand(Guid promotionId, string name, bool active)
+        {
+            PromotionId = promotionId;
+            Name = name;
+            Active = active;
+        }
+
+        public override ValidationResult Validate()
+        {
+            return new ChangePromotionCommandValidator().Validate(this);
+        }
+
     }
 
-    public override ValidationResult Validate()
+    public class ChangePromotionCommandValidator : AbstractValidator<ChangePromotionCommand>
     {
-        return new ChangePromotionCommandValidator().Validate(this);
-    }
+        public ChangePromotionCommandValidator()
+        {
 
-}
-
-public class ChangePromotionCommandValidator : AbstractValidator<ChangePromotionCommand>
-{
-    public ChangePromotionCommandValidator()
-    {
-        
+        }
     }
 }

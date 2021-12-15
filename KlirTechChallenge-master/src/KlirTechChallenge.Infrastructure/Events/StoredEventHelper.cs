@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using System.Reflection;
 using KlirTechChallenge.Domain.Core.Events;
 using KlirTechChallenge.Domain.Customers.Events;
+using System;
 
 namespace KlirTechChallenge.Infrastructure.Events
 {

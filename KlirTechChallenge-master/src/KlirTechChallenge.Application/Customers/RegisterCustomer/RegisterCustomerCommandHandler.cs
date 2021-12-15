@@ -8,81 +8,83 @@ using Microsoft.AspNetCore.Identity;
 using KlirTechChallenge.Infrastructure.Identity.Users;
 using KlirTechChallenge.Application.Core.CQRS.CommandHandling;
 using KlirTechChallenge.Application.Core.ExceptionHandling;
+using System;
 
-namespace KlirTechChallenge.Application.Customers.RegisterCustomer;
-
-public class RegisterCustomerCommandHandler : CommandHandler<RegisterCustomerCommand, Guid>
+namespace KlirTechChallenge.Application.Customers.RegisterCustomer
 {
-    private readonly IEcommerceUnitOfWork _unitOfWork;
-    private readonly ICustomerUniquenessChecker _uniquenessChecker;
-    private readonly UserManager<ApplicationUser> _userManager;
-    private readonly IHttpContextAccessor _httpContextAccessor;
-
-    public RegisterCustomerCommandHandler(
-        UserManager<ApplicationUser> userManager,
-        IEcommerceUnitOfWork unitOfWork,
-        ICustomerUniquenessChecker uniquenessChecker,
-        IHttpContextAccessor httpContextAccessor)
+    public class RegisterCustomerCommandHandler : CommandHandler<RegisterCustomerCommand, Guid>
     {
-        _userManager = userManager;
-        _unitOfWork = unitOfWork;
-        _uniquenessChecker = uniquenessChecker;
-        _httpContextAccessor = httpContextAccessor;
-    }
+        private readonly IEcommerceUnitOfWork _unitOfWork;
+        private readonly ICustomerUniquenessChecker _uniquenessChecker;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public override async Task<Guid> ExecuteCommand(RegisterCustomerCommand command, 
-        CancellationToken cancellationToken)
-    {
-        try
+        public RegisterCustomerCommandHandler(
+            UserManager<ApplicationUser> userManager,
+            IEcommerceUnitOfWork unitOfWork,
+            ICustomerUniquenessChecker uniquenessChecker,
+            IHttpContextAccessor httpContextAccessor)
         {
-            var customer = Customer.CreateNew(
-                command.Email, 
-                command.Name, 
-                _uniquenessChecker
-            );
+            _userManager = userManager;
+            _unitOfWork = unitOfWork;
+            _uniquenessChecker = uniquenessChecker;
+            _httpContextAccessor = httpContextAccessor;
+        }
 
-            if (customer != null)
+        public override async Task<Guid> ExecuteCommand(RegisterCustomerCommand command,
+            CancellationToken cancellationToken)
+        {
+            try
             {
-                await _unitOfWork.Customers
-                    .Add(customer, cancellationToken);
+                var customer = Customer.CreateNew(
+                    command.Email,
+                    command.Name,
+                    _uniquenessChecker
+                );
 
-                await CreateUserForCustomer(command);
-                await _unitOfWork.CommitAsync();
+                if (customer != null)
+                {
+                    await _unitOfWork.Customers
+                        .Add(customer, cancellationToken);
+
+                    await CreateUserForCustomer(command);
+                    await _unitOfWork.CommitAsync();
+                }
+
+                return customer.Id.Value;
             }
-
-            return customer.Id.Value;
-        }
-        catch(Exception)
-        {
-            throw;
-        }
-    }
-
-    private async Task<ApplicationUser> CreateUserForCustomer(RegisterCustomerCommand request)
-    {
-        //Creating Identity user
-        var user = new ApplicationUser(_httpContextAccessor)
-        {
-            UserName = request.Email,
-            Email = request.Email
-        };
-
-        var userCreated = await _userManager
-            .CreateAsync(user, request.Password);
-
-        if (!userCreated.Succeeded)
-        {
-            foreach (var error in userCreated.Errors)
+            catch (Exception)
             {
-                throw new ApplicationDataException(error.Description.ToString());
+                throw;
             }
         }
 
-        //Adding user claims
-        await _userManager.AddClaimAsync(user, new Claim("CanRead", "Read"));
-        await _userManager.AddClaimAsync(user, new Claim("CanSave", "Save"));
-        await _userManager.AddClaimAsync(user, new Claim("CanDelete", "Delete"));            
+        private async Task<ApplicationUser> CreateUserForCustomer(RegisterCustomerCommand request)
+        {
+            //Creating Identity user
+            var user = new ApplicationUser(_httpContextAccessor)
+            {
+                UserName = request.Email,
+                Email = request.Email
+            };
 
-        return user;
+            var userCreated = await _userManager
+                .CreateAsync(user, request.Password);
+
+            if (!userCreated.Succeeded)
+            {
+                foreach (var error in userCreated.Errors)
+                {
+                    throw new ApplicationDataException(error.Description.ToString());
+                }
+            }
+
+            //Adding user claims
+            await _userManager.AddClaimAsync(user, new Claim("CanRead", "Read"));
+            await _userManager.AddClaimAsync(user, new Claim("CanSave", "Save"));
+            await _userManager.AddClaimAsync(user, new Claim("CanDelete", "Delete"));
+
+            return user;
+        }
     }
 }

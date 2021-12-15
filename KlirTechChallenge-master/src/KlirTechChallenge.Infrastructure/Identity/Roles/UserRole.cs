@@ -1,17 +1,19 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using System;
 
-namespace KlirTechChallenge.Infrastructure.Identity.Roles;
-
-public class UserRole : IdentityRole<Guid>
+namespace KlirTechChallenge.Infrastructure.Identity.Roles
 {
-    public UserRole()
+    public class UserRole : IdentityRole<Guid>
     {
-        this.Id = Guid.NewGuid();
-    }
+        public UserRole()
+        {
+            this.Id = Guid.NewGuid();
+        }
 
-    public UserRole(string name)
-        : this()
-    {
-        this.Name = name;
+        public UserRole(string name)
+            : this()
+        {
+            this.Name = name;
+        }
     }
 }

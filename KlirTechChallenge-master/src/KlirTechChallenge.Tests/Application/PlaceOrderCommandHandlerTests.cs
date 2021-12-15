@@ -13,81 +13,82 @@ using KlirTechChallenge.Domain.SharedKernel;
 using KlirTechChallenge.Application.Orders.PlaceOrder;
 using KlirTechChallenge.Domain.Promotions;
 
-namespace KlirTechChallenge.Tests.Application;
-
-public class PlaceOrderCommandHandlerTests
+namespace KlirTechChallenge.Tests.Application
 {
-    private readonly IEcommerceUnitOfWork _unitOfWork;
-    private readonly ICustomers _customers;
-    private readonly IProducts  _products;
-    private readonly IQuotes _quotes;
-    private readonly ICurrencyConverter _currencyConverter;
-    private readonly IPromotions _promotions;
-
-
-    public PlaceOrderCommandHandlerTests()
+    public class PlaceOrderCommandHandlerTests
     {
-        _customers = NSubstitute.Substitute.For<ICustomers>();
-        _products = NSubstitute.Substitute.For<IProducts>();
-        _quotes = NSubstitute.Substitute.For<IQuotes>();
-        _currencyConverter = Substitute.For<ICurrencyConverter>();
-        _promotions = Substitute.For<IPromotions>();
-        _unitOfWork = NSubstitute.Substitute.For<IEcommerceUnitOfWork>();
+        private readonly IEcommerceUnitOfWork _unitOfWork;
+        private readonly ICustomers _customers;
+        private readonly IProducts _products;
+        private readonly IQuotes _quotes;
+        private readonly ICurrencyConverter _currencyConverter;
+        private readonly IPromotions _promotions;
 
-        _unitOfWork.Customers.ReturnsForAnyArgs(_customers);
-        _unitOfWork.Products.ReturnsForAnyArgs(_products);
-        _unitOfWork.Promotions.ReturnsForAnyArgs(_promotions);
-        _unitOfWork.Quotes.ReturnsForAnyArgs(_quotes);
-    }
 
-    [Fact]
-    public async Task Order_has_been_placed_for_customer()
-    {
-        var currency = Currency.CanadianDollar;
-        var productPrice = 12.5;
-        var productQuantity = 10;
-        var customerEmail = "test@domain.com";
+        public PlaceOrderCommandHandlerTests()
+        {
+            _customers = NSubstitute.Substitute.For<ICustomers>();
+            _products = NSubstitute.Substitute.For<IProducts>();
+            _quotes = NSubstitute.Substitute.For<IQuotes>();
+            _currencyConverter = Substitute.For<ICurrencyConverter>();
+            _promotions = Substitute.For<IPromotions>();
+            _unitOfWork = NSubstitute.Substitute.For<IEcommerceUnitOfWork>();
 
-        var productMoney = Money.Of(Convert.ToDecimal(productPrice), currency.Code);
-        _currencyConverter.Convert(currency, Money.Of(Convert.ToDecimal(productPrice * productQuantity), currency.Code))
-            .Returns(productMoney);
+            _unitOfWork.Customers.ReturnsForAnyArgs(_customers);
+            _unitOfWork.Products.ReturnsForAnyArgs(_products);
+            _unitOfWork.Promotions.ReturnsForAnyArgs(_promotions);
+            _unitOfWork.Quotes.ReturnsForAnyArgs(_quotes);
+        }
 
-        var customerUniquenessChecker = Substitute.For<ICustomerUniquenessChecker>();
-        customerUniquenessChecker.IsUserUnique(customerEmail).Returns(true);
+        [Fact]
+        public async Task Order_has_been_placed_for_customer()
+        {
+            var currency = Currency.CanadianDollar;
+            var productPrice = 12.5;
+            var productQuantity = 10;
+            var customerEmail = "test@domain.com";
 
-        var customerId = CustomerId.Of(Guid.NewGuid());
-        var customer = Customer.CreateNew(customerEmail, "Customer X", customerUniquenessChecker);
+            var productMoney = Money.Of(Convert.ToDecimal(productPrice), currency.Code);
+            _currencyConverter.Convert(currency, Money.Of(Convert.ToDecimal(productPrice * productQuantity), currency.Code))
+                .Returns(productMoney);
 
-        _customers.GetById(Arg.Any<CustomerId>()).Returns(customer);
+            var customerUniquenessChecker = Substitute.For<ICustomerUniquenessChecker>();
+            customerUniquenessChecker.IsUserUnique(customerEmail).Returns(true);
 
-        var product = Product.CreateNew("Product X", productMoney,null);
-        _products.GetById(Arg.Any<ProductId>()).Returns(product);
+            var customerId = CustomerId.Of(Guid.NewGuid());
+            var customer = Customer.CreateNew(customerEmail, "Customer X", customerUniquenessChecker);
 
-        var productData = new QuoteItemProductData(product.Id, product.Price, productQuantity,"",0);
-        var quote = Quote.CreateNew(customerId);
-        quote.AddItem(productData);
+            _customers.GetById(Arg.Any<CustomerId>()).Returns(customer);
 
-        List<Product> products = new List<Product>() { product };
-        _quotes.GetById(quote.Id).Returns(quote);
-        _products.GetByIds(Arg.Any<List<ProductId>>()).Returns(products);
+            var product = Product.CreateNew("Product X", productMoney, null);
+            _products.GetById(Arg.Any<ProductId>()).Returns(product);
 
-        var placeOrderCommandHandler = new PlaceOrderCommandHandler(_unitOfWork, _currencyConverter);
-        var placeOrderCommand = new PlaceOrderCommand(quote.Id.Value, customerId.Value, currency.Code);
+            var productData = new QuoteItemProductData(product.Id, product.Price, productQuantity, "", 0);
+            var quote = Quote.CreateNew(customerId);
+            quote.AddItem(productData);
 
-        var orderResult = await placeOrderCommandHandler.Handle(placeOrderCommand, CancellationToken.None);
+            List<Product> products = new List<Product>() { product };
+            _quotes.GetById(quote.Id).Returns(quote);
+            _products.GetByIds(Arg.Any<List<ProductId>>()).Returns(products);
 
-        await _unitOfWork.Received(1).CommitAsync(Arg.Any<CancellationToken>());
-        orderResult.Should().NotBe(Guid.Empty);
-    }
+            var placeOrderCommandHandler = new PlaceOrderCommandHandler(_unitOfWork, _currencyConverter);
+            var placeOrderCommand = new PlaceOrderCommand(quote.Id.Value, customerId.Value, currency.Code);
 
-    [Fact]
-    public async Task PlaceOrderCommand_validation_should_fail_with_empty_required_fields()
-    {
-        var handler = new PlaceOrderCommandHandler(_unitOfWork, _currencyConverter);
-        var command = new PlaceOrderCommand(Guid.Empty, Guid.Empty, string.Empty);
-        var result = await handler.Handle(command, CancellationToken.None);
+            var orderResult = await placeOrderCommandHandler.Handle(placeOrderCommand, CancellationToken.None);
 
-        result.ValidationResult.IsValid.Should().BeFalse();
-        result.ValidationResult.Errors.Count.Should().Be(3);
+            await _unitOfWork.Received(1).CommitAsync(Arg.Any<CancellationToken>());
+            orderResult.Should().NotBe(Guid.Empty);
+        }
+
+        [Fact]
+        public async Task PlaceOrderCommand_validation_should_fail_with_empty_required_fields()
+        {
+            var handler = new PlaceOrderCommandHandler(_unitOfWork, _currencyConverter);
+            var command = new PlaceOrderCommand(Guid.Empty, Guid.Empty, string.Empty);
+            var result = await handler.Handle(command, CancellationToken.None);
+
+            result.ValidationResult.IsValid.Should().BeFalse();
+            result.ValidationResult.Errors.Count.Should().Be(3);
+        }
     }
 }

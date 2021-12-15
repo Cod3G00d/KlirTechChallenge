@@ -2,42 +2,44 @@
 using KlirTechChallenge.Domain.Customers;
 using KlirTechChallenge.Domain.Products;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore;
 
-namespace KlirTechChallenge.Infrastructure.Database.Configurations;
-
-internal sealed class QuoteConfiguration : IEntityTypeConfiguration<Quote>
+namespace KlirTechChallenge.Infrastructure.Database.Configurations
 {
-    public void Configure(EntityTypeBuilder<Quote> builder)
+    internal sealed class QuoteConfiguration : IEntityTypeConfiguration<Quote>
     {
-        builder.ToTable("Quotes", "dbo");
-
-        builder.HasKey(x => x.Id);
-        builder.Property(x => x.Id)
-        .HasConversion(
-            v => v.Value,
-            v => new QuoteId(v));
-            
-        builder.Property(e => e.CustomerId)
-        .HasConversion(guid => guid.Value, s => new CustomerId(s));
-
-        builder.Property(e => e.CreationDate);
-
-        builder.OwnsMany(s => s.Items, b =>
+        public void Configure(EntityTypeBuilder<Quote> builder)
         {
-            b.WithOwner().HasForeignKey("QuoteId");
+            builder.ToTable("Quotes", "dbo");
 
-            b.ToTable("QuoteItems", "dbo")
-            .HasKey(x => x.Id);
+            builder.HasKey(x => x.Id);
+            builder.Property(x => x.Id)
+            .HasConversion(
+                v => v.Value,
+                v => new QuoteId(v));
 
-            b.Property(e => e.Id).IsRequired()
-            .ValueGeneratedNever();
+            builder.Property(e => e.CustomerId)
+            .HasConversion(guid => guid.Value, s => new CustomerId(s));
 
-            b.Property(e => e.ProductId)
-            .HasConversion(guid => guid.Value, s => new ProductId(s));
+            builder.Property(e => e.CreationDate);
 
-            b.Property(e => e.Quantity);
+            builder.OwnsMany(s => s.Items, b =>
+            {
+                b.WithOwner().HasForeignKey("QuoteId");
 
-            b.Property(e => e.TotalPrice);
-        });
+                b.ToTable("QuoteItems", "dbo")
+                .HasKey(x => x.Id);
+
+                b.Property(e => e.Id).IsRequired()
+                .ValueGeneratedNever();
+
+                b.Property(e => e.ProductId)
+                .HasConversion(guid => guid.Value, s => new ProductId(s));
+
+                b.Property(e => e.Quantity);
+
+                b.Property(e => e.TotalPrice);
+            });
+        }
     }
 }

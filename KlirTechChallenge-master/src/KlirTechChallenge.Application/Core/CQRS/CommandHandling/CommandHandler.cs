@@ -3,47 +3,49 @@ using MediatR;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace KlirTechChallenge.Application.Core.CQRS.CommandHandling;
-
-/// <summary>
-/// Interface for Command Handler implementation
-/// </summary>
-public interface ICommandHandler<in TCommand, TResult> : IRequestHandler<TCommand, TResult>
-    where TCommand : ICommand<TResult> {}
-
-/// <summary>
-/// Abstract class for Command Handler implementation
-/// </summary>
-/// <typeparam name="TCommand"></typeparam>
-/// <typeparam name="TID"></typeparam>
-public abstract class CommandHandler<TCommand, TID> : ICommandHandler<TCommand, CommandHandlerResult<TID>>
-    where TCommand : ICommand<CommandHandlerResult<TID>>
-    where TID : struct
+namespace KlirTechChallenge.Application.Core.CQRS.CommandHandling
 {
     /// <summary>
-    /// To override
+    /// Interface for Command Handler implementation
     /// </summary>
-    /// <param name="command"></param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
-    public abstract Task<TID> ExecuteCommand(TCommand command, CancellationToken cancellationToken = default);
+    public interface ICommandHandler<in TCommand, TResult> : IRequestHandler<TCommand, TResult>
+        where TCommand : ICommand<TResult>
+    { }
 
     /// <summary>
-    /// MediatR Handle implementation
+    /// Abstract class for Command Handler implementation
     /// </summary>
-    /// <param name="command"></param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
-    public async Task<CommandHandlerResult<TID>> Handle(TCommand command, CancellationToken cancellationToken = default)
+    /// <typeparam name="TCommand"></typeparam>
+    /// <typeparam name="TID"></typeparam>
+    public abstract class CommandHandler<TCommand, TID> : ICommandHandler<TCommand, CommandHandlerResult<TID>>
+        where TCommand : ICommand<CommandHandlerResult<TID>>
+        where TID : struct
     {
-        CommandHandlerResult<TID> result = new CommandHandlerResult<TID>(command);
+        /// <summary>
+        /// To override
+        /// </summary>
+        /// <param name="command"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public abstract Task<TID> ExecuteCommand(TCommand command, CancellationToken cancellationToken = default);
 
-        try
+        /// <summary>
+        /// MediatR Handle implementation
+        /// </summary>
+        /// <param name="command"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public async Task<CommandHandlerResult<TID>> Handle(TCommand command, CancellationToken cancellationToken = default)
         {
-            if (result.ValidationResult.IsValid)
-                result.Id = await ExecuteCommand(command, cancellationToken);
+            CommandHandlerResult<TID> result = new CommandHandlerResult<TID>(command);
+
+            try
+            {
+                if (result.ValidationResult.IsValid)
+                    result.Id = await ExecuteCommand(command, cancellationToken);
+            }
+            catch (Exception) { throw; }
+            return result;
         }
-        catch (Exception) { throw; }
-        return result;
     }
 }

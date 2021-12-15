@@ -1,9 +1,12 @@
-﻿namespace KlirTechChallenge.Application.Products;
+﻿using System;
 
-public record ProductViewModel
+namespace KlirTechChallenge.Application.Products
 {
-    public Guid Id { get; init; }
-    public string Name { get; init; }
-    public string Price { get; init; }
-    public string CurrencySymbol { get; init; }
+    public class ProductViewModel
+    {
+        public Guid Id { get; init; }
+        public string Name { get; init; }
+        public string Price { get; init; }
+        public string CurrencySymbol { get; init; }
+    }
 }

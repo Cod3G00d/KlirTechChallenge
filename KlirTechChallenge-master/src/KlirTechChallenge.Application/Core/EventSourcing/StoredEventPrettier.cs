@@ -3,30 +3,31 @@ using System.Collections.Generic;
 using KlirTechChallenge.Domain.Core.Events;
 using KlirTechChallenge.Application.Core.EventSourcing.StoredEventsData;
 
-namespace KlirTechChallenge.Application.Core.EventSourcing;
-
-public static class StoredEventPrettier<THistoryData> 
-    where THistoryData : StoredEventData, new()
+namespace KlirTechChallenge.Application.Core.EventSourcing
 {
-    public static List<THistoryData> ToPretty(IList<StoredEvent> messages)
+    public static class StoredEventPrettier<THistoryData>
+        where THistoryData : StoredEventData, new()
     {
-        List<THistoryData> historyData = new List<THistoryData>();
-
-        foreach (var message in messages)
+        public static List<THistoryData> ToPretty(IList<StoredEvent> messages)
         {
-            var eventName = message.MessageType
-                .Substring(message.MessageType.LastIndexOf('.')).Substring(1);
+            List<THistoryData> historyData = new List<THistoryData>();
 
-            THistoryData history = JsonConvert
-                .DeserializeObject<THistoryData>(message.Payload);
+            foreach (var message in messages)
+            {
+                var eventName = message.MessageType
+                    .Substring(message.MessageType.LastIndexOf('.')).Substring(1);
 
-            history.Id = message.Id.ToString();
-            history.Timestamp = message
-                .CreatedAt.ToString("yyyy'-'MM'-'dd' - 'HH':'mm':'ss");                 
-            history.Action = eventName;
-            historyData.Add(history);
+                THistoryData history = JsonConvert
+                    .DeserializeObject<THistoryData>(message.Payload);
+
+                history.Id = message.Id.ToString();
+                history.Timestamp = message
+                    .CreatedAt.ToString("yyyy'-'MM'-'dd' - 'HH':'mm':'ss");
+                history.Action = eventName;
+                historyData.Add(history);
+            }
+
+            return historyData;
         }
-
-        return historyData;
     }
 }

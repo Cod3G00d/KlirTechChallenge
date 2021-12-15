@@ -1,8 +1,9 @@
-﻿namespace KlirTechChallenge.Domain.Payments;
-
-public enum PaymentStatus
+﻿namespace KlirTechChallenge.Domain.Payments
 {
-    ToPay = 1,
-    Paid = 2,
-    PaymentNotAuthorized = 3
+    public enum PaymentStatus
+    {
+        ToPay = 1,
+        Paid = 2,
+        PaymentNotAuthorized = 3
+    }
 }

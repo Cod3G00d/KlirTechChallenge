@@ -1,17 +1,20 @@
-﻿using System.Text.Json.Serialization;
+﻿using FluentValidation.Results;
+using System;
+using System.Text.Json.Serialization;
 
-namespace KlirTechChallenge.Application.Customers;
-
-public record class CustomerViewModel
+namespace KlirTechChallenge.Application.Customers
 {
-    public Guid Id { get; set; }
-    public string Email { get; set; }
-    public string Name { get; set; }
-    public string Password { get; set; }
-    public string Token { get; set; }
+    public  class CustomerViewModel
+    {
+        public Guid Id { get; set; }
+        public string Email { get; set; }
+        public string Name { get; set; }
+        public string Password { get; set; }
+        public string Token { get; set; }
 
-    public ValidationResult ValidationResult { get; set; } = new ValidationResult();
+        public ValidationResult ValidationResult { get; set; } = new ValidationResult();
 
-    [JsonIgnore]
-    public bool LoginSucceeded { get; set; }
+        [JsonIgnore]
+        public bool LoginSucceeded { get; set; }
+    }
 }

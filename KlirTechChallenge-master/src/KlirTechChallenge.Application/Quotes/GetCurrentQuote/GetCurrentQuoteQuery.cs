@@ -1,26 +1,30 @@
-﻿using KlirTechChallenge.Application.Core.CQRS.QueryHandling;
+﻿using FluentValidation;
+using FluentValidation.Results;
+using KlirTechChallenge.Application.Core.CQRS.QueryHandling;
+using System;
 
-namespace KlirTechChallenge.Application.Quotes.GetCurrentQuote;
-
-public record class GetCurrentQuoteQuery : Query<Guid>
+namespace KlirTechChallenge.Application.Quotes.GetCurrentQuote
 {
-    public Guid CustomerId { get; init; }
-
-    public GetCurrentQuoteQuery(Guid customerId)
+    public  class GetCurrentQuoteQuery : Query<Guid>
     {
-        CustomerId = customerId;
+        public Guid CustomerId { get; init; }
+
+        public GetCurrentQuoteQuery(Guid customerId)
+        {
+            CustomerId = customerId;
+        }
+
+        public override ValidationResult Validate()
+        {
+            return new GetCurrentQuoteQueryValidator().Validate(this);
+        }
     }
 
-    public override ValidationResult Validate()
+    public class GetCurrentQuoteQueryValidator : AbstractValidator<GetCurrentQuoteQuery>
     {
-        return new GetCurrentQuoteQueryValidator().Validate(this);
-    }
-}
-
-public class GetCurrentQuoteQueryValidator : AbstractValidator<GetCurrentQuoteQuery>
-{
-    public GetCurrentQuoteQueryValidator()
-    {
-        RuleFor(x => x.CustomerId).NotEqual(Guid.Empty).WithMessage("Customer is empty.");
+        public GetCurrentQuoteQueryValidator()
+        {
+            RuleFor(x => x.CustomerId).NotEqual(Guid.Empty).WithMessage("Customer is empty.");
+        }
     }
 }

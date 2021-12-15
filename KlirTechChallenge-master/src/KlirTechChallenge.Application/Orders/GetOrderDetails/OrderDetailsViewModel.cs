@@ -1,9 +1,10 @@
 ﻿using System.Linq;
 using System.Collections.Generic;
+using System;
 
 namespace KlirTechChallenge.Application.Orders.GetOrderDetails
 {
-    public record class OrderDetailsViewModel
+    public  class OrderDetailsViewModel
     {
         public Guid OrderId { get; set; }
         public List<OrderLinesDetailsViewModel> OrderLines { get; set; } = new List<OrderLinesDetailsViewModel>();
@@ -17,7 +18,7 @@ namespace KlirTechChallenge.Application.Orders.GetOrderDetails
         }
     }
 
-    public record class OrderLinesDetailsViewModel
+    public  class OrderLinesDetailsViewModel
     {
         public Guid ProductId { get; init; }
         public string ProductName { get; init; }
@@ -26,7 +27,7 @@ namespace KlirTechChallenge.Application.Orders.GetOrderDetails
         public string CurrencySymbol { get; init; }
     }
 
-    public record class OrderStatusViewModel
+    public  class OrderStatusViewModel
     {
         public int StatusCode { get; init; }
         public string StatusText { get; init; }

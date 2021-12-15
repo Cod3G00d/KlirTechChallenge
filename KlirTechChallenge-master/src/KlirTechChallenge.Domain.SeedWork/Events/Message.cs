@@ -1,12 +1,15 @@
-﻿namespace KlirTechChallenge.Domain.Core.Events;
+﻿using System;
 
-public abstract record class Message
+namespace KlirTechChallenge.Domain.Core.Events
 {
-    public string MessageType { get; init; }
-    public Guid AggregateId { get; init; }
-
-    protected Message()
+    public abstract  class Message
     {
-        MessageType = GetType().FullName;
+        public string MessageType { get; init; }
+        public Guid AggregateId { get; init; }
+
+        protected Message()
+        {
+            MessageType = GetType().FullName;
+        }
     }
 }

@@ -1,8 +1,9 @@
 ﻿using KlirTechChallenge.Domain.Payments;
 
-namespace KlirTechChallenge.Domain.Orders;
-
-public interface IOrderStatusWorkflow
+namespace KlirTechChallenge.Domain.Orders
 {
-    void CalculateOrderStatus(Order order, Payment payment);
+    public interface IOrderStatusWorkflow
+    {
+        void CalculateOrderStatus(Order order, Payment payment);
+    }
 }

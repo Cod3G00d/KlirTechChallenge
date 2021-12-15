@@ -2,18 +2,18 @@
 using Microsoft.AspNetCore.SignalR;
 using KlirTechChallenge.Application.Orders.GetOrderDetails;
 
-namespace KlirTechChallenge.Application.Core.SignalR;
-
-public interface IOrderStatusHubClient
+namespace KlirTechChallenge.Application.Core.SignalR
 {
-    Task UpdateOrderStatus(string orderId, OrderStatusViewModel orderStatus);
-}
-
-public class OrderStatusHub : Hub<IOrderStatusHubClient>
-{
-    public Task JoinCustomerToGroup(string customerId)
+    public interface IOrderStatusHubClient
     {
-        return Groups.AddToGroupAsync(Context.ConnectionId, customerId);
+        Task UpdateOrderStatus(string orderId, OrderStatusViewModel orderStatus);
     }
-}    
 
+    public class OrderStatusHub : Hub<IOrderStatusHubClient>
+    {
+        public Task JoinCustomerToGroup(string customerId)
+        {
+            return Groups.AddToGroupAsync(Context.ConnectionId, customerId);
+        }
+    }
+}

@@ -3,89 +3,92 @@ using KlirTechChallenge.Domain.Orders;
 using KlirTechChallenge.Domain.Products;
 using KlirTechChallenge.Domain.Quotes;
 using KlirTechChallenge.Domain.SharedKernel;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using System;
 
-namespace KlirTechChallenge.Infrastructure.Database.Configurations;
-
-internal sealed class OrderConfiguration : IEntityTypeConfiguration<Order>
+namespace KlirTechChallenge.Infrastructure.Database.Configurations
 {
-    public void Configure(EntityTypeBuilder<Order> builder)
+    internal sealed class OrderConfiguration : IEntityTypeConfiguration<Order>
     {
-        builder.ToTable("Orders", "dbo");
-
-        builder.HasKey(x => x.Id);
-        builder.Property(x => x.Id)
-        .HasConversion(
-            v => v.Value,
-            v => new OrderId(v));
-
-        builder.Property(x => x.CustomerId)
-        .HasConversion(
-            v => v.Value,
-            v => new CustomerId(v));
-
-        builder.Property(x => x.QuoteId)
-        .HasConversion(
-            v => v.Value,
-            v => new QuoteId(v));
-
-        builder.Property<DateTime>("CreatedAt")
-        .HasColumnName("CreatedAt");
-
-        builder.Property("Status")
-        .HasColumnName("StatusId")
-        .HasConversion(new EnumToNumberConverter<OrderStatus, byte>());
-
-        builder.OwnsOne(o => o.TotalPrice, o =>
+        public void Configure(EntityTypeBuilder<Order> builder)
         {
-            o.Property(e => e.Value)
-            .HasColumnName("TotalPrice")
-            .HasColumnType("decimal(5,2)");
+            builder.ToTable("Orders", "dbo");
 
-            o.Property(e => e.CurrencyCode)
-            .HasColumnName("Currency").HasMaxLength(5);
-        });
-
-        builder.OwnsMany(s => s.OrderLines, y =>
-        {
-            y.WithOwner().HasForeignKey("OrderId");
-
-            y.ToTable("OrderLines", "dbo");
-
-            y.Property(x => x.OrderId)
+            builder.HasKey(x => x.Id);
+            builder.Property(x => x.Id)
             .HasConversion(
                 v => v.Value,
                 v => new OrderId(v));
 
-            y.Property(x => x.ProductId)
+            builder.Property(x => x.CustomerId)
             .HasConversion(
                 v => v.Value,
-                v => new ProductId(v));
+                v => new CustomerId(v));
 
-            y.HasKey("OrderId", "ProductId");
+            builder.Property(x => x.QuoteId)
+            .HasConversion(
+                v => v.Value,
+                v => new QuoteId(v));
 
-            y.OwnsOne<Money>("ProductBasePrice", b =>
+            builder.Property<DateTime>("CreatedAt")
+            .HasColumnName("CreatedAt");
+
+            builder.Property("Status")
+            .HasColumnName("StatusId")
+            .HasConversion(new EnumToNumberConverter<OrderStatus, byte>());
+
+            builder.OwnsOne(o => o.TotalPrice, o =>
             {
-                b.Property(e => e.Value)
-                .HasColumnName("BasePrice")
+                o.Property(e => e.Value)
+                .HasColumnName("TotalPrice")
                 .HasColumnType("decimal(5,2)");
 
-                b.Property(e => e.CurrencyCode)
-                .HasColumnName("BaseCurrency")
-                .HasMaxLength(5);
+                o.Property(e => e.CurrencyCode)
+                .HasColumnName("Currency").HasMaxLength(5);
             });
 
-            y.OwnsOne<Money>("ProductExchangePrice", b =>
+            builder.OwnsMany(s => s.OrderLines, y =>
             {
-                b.Property(e => e.Value)
-                .HasColumnName("ExchangePrice")
-                .HasColumnType("decimal(5,2)");
+                y.WithOwner().HasForeignKey("OrderId");
 
-                b.Property(e => e.CurrencyCode)
-                .HasColumnName("ExchangeCurrency")
-                .HasMaxLength(5);
+                y.ToTable("OrderLines", "dbo");
+
+                y.Property(x => x.OrderId)
+                .HasConversion(
+                    v => v.Value,
+                    v => new OrderId(v));
+
+                y.Property(x => x.ProductId)
+                .HasConversion(
+                    v => v.Value,
+                    v => new ProductId(v));
+
+                y.HasKey("OrderId", "ProductId");
+
+                y.OwnsOne<Money>("ProductBasePrice", b =>
+                {
+                    b.Property(e => e.Value)
+                    .HasColumnName("BasePrice")
+                    .HasColumnType("decimal(5,2)");
+
+                    b.Property(e => e.CurrencyCode)
+                    .HasColumnName("BaseCurrency")
+                    .HasMaxLength(5);
+                });
+
+                y.OwnsOne<Money>("ProductExchangePrice", b =>
+                {
+                    b.Property(e => e.Value)
+                    .HasColumnName("ExchangePrice")
+                    .HasColumnType("decimal(5,2)");
+
+                    b.Property(e => e.CurrencyCode)
+                    .HasColumnName("ExchangeCurrency")
+                    .HasMaxLength(5);
+                });
             });
-        });
+        }
     }
 }

@@ -1,6 +1,7 @@
-﻿namespace KlirTechChallenge.Application.Core.EventSourcing.StoredEventsData;
-
-public record class CustomerStoredEventData : StoredEventData
+﻿namespace KlirTechChallenge.Application.Core.EventSourcing.StoredEventsData
 {
-    public string Name { get; init; }
+    public  class CustomerStoredEventData : StoredEventData
+    {
+        public string Name { get; init; }
+    }
 }

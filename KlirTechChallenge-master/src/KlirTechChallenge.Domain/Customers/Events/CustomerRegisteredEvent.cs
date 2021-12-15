@@ -1,16 +1,17 @@
 ﻿using KlirTechChallenge.Domain.Core.Events;
 
-namespace KlirTechChallenge.Domain.Customers.Events;
-
-public record class CustomerRegisteredEvent : DomainEvent
+namespace KlirTechChallenge.Domain.Customers.Events
 {
-    public CustomerId CustomerId { get; init; }
-    public string Name { get; init; }
-
-    public CustomerRegisteredEvent(CustomerId customerId, string name)
+    public  class CustomerRegisteredEvent : DomainEvent
     {
-        CustomerId = customerId;
-        Name = name;
-        AggregateId = customerId.Value;
+        public CustomerId CustomerId { get; init; }
+        public string Name { get; init; }
+
+        public CustomerRegisteredEvent(CustomerId customerId, string name)
+        {
+            CustomerId = customerId;
+            Name = name;
+            AggregateId = customerId.Value;
+        }
     }
 }

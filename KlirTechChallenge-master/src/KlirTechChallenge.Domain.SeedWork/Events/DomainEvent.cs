@@ -1,17 +1,20 @@
 ﻿using MediatR;
-namespace KlirTechChallenge.Domain.Core.Events;
+using System;
 
-public interface IDomainEvent : INotification
+namespace KlirTechChallenge.Domain.Core.Events
 {
-    DateTime CreatedAt { get; }
-}
-
-public abstract record class DomainEvent : Message, IDomainEvent
-{
-    public DateTime CreatedAt { get; init; }
-
-    public DomainEvent()
+    public interface IDomainEvent : INotification
     {
-        CreatedAt = DateTime.Now;
+        DateTime CreatedAt { get; }
+    }
+
+    public abstract  class DomainEvent : Message, IDomainEvent
+    {
+        public DateTime CreatedAt { get; init; }
+
+        public DomainEvent()
+        {
+            CreatedAt = DateTime.Now;
+        }
     }
 }

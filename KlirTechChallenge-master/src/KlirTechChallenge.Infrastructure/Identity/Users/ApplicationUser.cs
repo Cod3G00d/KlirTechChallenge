@@ -3,53 +3,55 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using System;
 
-namespace KlirTechChallenge.Infrastructure.Identity.Users;
-
-public interface IApplicationUser
+namespace KlirTechChallenge.Infrastructure.Identity.Users
 {
-    string Name { get; }
-    string Email { get; }
-    ClaimsPrincipal GetUser();
-    bool IsAuthenticated();
-    IEnumerable<Claim> GetClaimsIdentity();
-}
-
-public class ApplicationUser : IdentityUser<Guid>, IApplicationUser
-{
-    public string Name => GetName();
-
-    public ApplicationUser(IHttpContextAccessor accessor)
+    public interface IApplicationUser
     {
-        _accessor = accessor;
+        string Name { get; }
+        string Email { get; }
+        ClaimsPrincipal GetUser();
+        bool IsAuthenticated();
+        IEnumerable<Claim> GetClaimsIdentity();
     }
 
-    public ClaimsPrincipal GetUser()
+    public class ApplicationUser : IdentityUser<Guid>, IApplicationUser
     {
-        return _accessor?.HttpContext?.User as ClaimsPrincipal;
-    }
+        public string Name => GetName();
 
-    private string GetName()
-    {
-        return _accessor.HttpContext.User.Identity.Name ??
-                _accessor.HttpContext.User.Claims
-                .FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
-    }
+        public ApplicationUser(IHttpContextAccessor accessor)
+        {
+            _accessor = accessor;
+        }
 
-    public bool IsAuthenticated()
-    {
-        return _accessor.HttpContext.User.Identity.IsAuthenticated;
-    }
+        public ClaimsPrincipal GetUser()
+        {
+            return _accessor?.HttpContext?.User as ClaimsPrincipal;
+        }
 
-    public IEnumerable<Claim> GetClaimsIdentity()
-    {
-        return _accessor.HttpContext.User.Claims;
-    }
+        private string GetName()
+        {
+            return _accessor.HttpContext.User.Identity.Name ??
+                    _accessor.HttpContext.User.Claims
+                    .FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
+        }
+
+        public bool IsAuthenticated()
+        {
+            return _accessor.HttpContext.User.Identity.IsAuthenticated;
+        }
+
+        public IEnumerable<Claim> GetClaimsIdentity()
+        {
+            return _accessor.HttpContext.User.Claims;
+        }
 
 
-    private readonly IHttpContextAccessor _accessor;
+        private readonly IHttpContextAccessor _accessor;
 
-    private ApplicationUser()
-    {
+        private ApplicationUser()
+        {
+        }
     }
 }
